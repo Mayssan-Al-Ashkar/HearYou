@@ -5,9 +5,8 @@
 <!-- project overview -->
 <img src="./readme/title2.svg"/>
 
-> Description here.
->
-> Description here.
+> HearYou is a mobile application designed to assist mothers by providing real-time alerts for important events happening around them
+
 
 <br><br>
 
@@ -25,7 +24,9 @@
 
 ### Add Title Here
 
-- List the sexy features.
+- Live video Straming to track the baby
+- Notify the mother when the baby cries or someone knocks the door
+- Requesting help in an emergency
 
 <br><br>
 
