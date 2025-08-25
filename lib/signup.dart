@@ -171,6 +171,7 @@ void _showTermsDialog() {
                     icon: Icons.email_outlined,
                     isDarkMode: isDarkMode,
                     controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   SizedBox(height: 20),
                   InputField(
