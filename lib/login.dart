@@ -304,7 +304,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       backgroundColor:
                           isDarkMode
                               ? Colors.deepPurpleAccent
-                              : const Color.fromARGB(255, 225, 141, 239),
+                              : const Color.fromARGB(255, 248, 205, 247),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                         side: BorderSide(color: Colors.grey.shade300),
@@ -354,7 +354,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
-                        color: const Color.fromARGB(255, 241, 200, 235),
+                        color: const Color.fromARGB(255, 248, 205, 247),
                         onPressed: () async {
                           try {
                             await GoogleSignIn().signOut();
