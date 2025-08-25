@@ -145,7 +145,7 @@ void _checkLoginStatus() async {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image.asset(
-                      'images/sseniorlogo.png',
+                      'images/logo.png',
                       width: 140,
                       height: 140,
                     ),
