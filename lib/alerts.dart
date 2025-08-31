@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'theme_provider.dart';
 
 class AlertsPage extends StatefulWidget {
@@ -11,11 +12,9 @@ class AlertsPage extends StatefulWidget {
 }
 
 class _AlertsPageState extends State<AlertsPage> {
-  final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref(
-    "colors",
-  );
-  final DatabaseReference _switchStateRef = FirebaseDatabase.instance.ref(
-    "vibration",
+  static const String apiBase = String.fromEnvironment(
+    'API_BASE',
+    defaultValue: 'http://10.0.2.2:5000',
   );
 
   Map<String, Color> selectedColors = {
@@ -38,31 +37,25 @@ class _AlertsPageState extends State<AlertsPage> {
   @override
   void initState() {
     super.initState();
-    _loadColorsFromFirebase();
-    _loadSwitchStateFromFirebase();
+    _loadSettings();
   }
 
-  void _loadColorsFromFirebase() {
-    _databaseRef.onValue.listen((event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>?;
-      if (data != null) {
+  Future<void> _loadSettings() async {
+    try {
+      final res = await http.get(Uri.parse('$apiBase/settings/'));
+      if (res.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(res.body);
+        final Map<String, dynamic> settings = data['settings'] ?? {};
+        final Map<String, dynamic> colors = settings['colors'] ?? {};
         setState(() {
-          data.forEach((key, value) {
+          colors.forEach((key, value) {
             selectedColors[key] = _getColorFromName(value.toString());
           });
+          isVibrationOn = settings['vibration'] == true;
           tempSelectedColors = Map.from(selectedColors);
         });
       }
-    });
-  }
-
-  void _loadSwitchStateFromFirebase() {
-    _switchStateRef.onValue.listen((event) {
-      final value = event.snapshot.value;
-      setState(() {
-        isVibrationOn = value == true;
-      });
-    });
+    } catch (_) {}
   }
 
   Color _getColorFromName(String colorName) {
@@ -93,30 +86,29 @@ class _AlertsPageState extends State<AlertsPage> {
     });
   }
 
-  void _saveColorsToFirebase() {
-    tempSelectedColors.forEach((action, color) {
-      _databaseRef.child(action).set(_getColorName(color));
-    });
-
-    setState(() {
-      selectedColors = Map.from(tempSelectedColors);
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Colors saved successfully!'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+  Future<void> _saveSettingsToMongo() async {
+    try {
+      final colors = tempSelectedColors.map((k, v) => MapEntry(k, _getColorName(v)));
+      final res = await http.post(
+        Uri.parse('$apiBase/settings/'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          'colors': colors,
+          'vibration': isVibrationOn,
+        }),
+      );
+      if (res.statusCode == 200) {
+        setState(() {
+          selectedColors = Map.from(tempSelectedColors);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Settings saved successfully!')),
+        );
+      }
+    } catch (_) {}
   }
 
-  void _updateSwitchState(bool value) {
-    setState(() {
-      isVibrationOn = value;
-    });
-
-    _switchStateRef.set(value);
-  }
+  // removed old realtime database update
 
   @override
   Widget build(BuildContext context) {
@@ -272,7 +264,7 @@ class _AlertsPageState extends State<AlertsPage> {
                         SizedBox(height: 20),
                         Center(
                           child: ElevatedButton(
-                            onPressed: _saveColorsToFirebase,
+                            onPressed: _saveSettingsToMongo,
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 40,
@@ -310,7 +302,9 @@ class _AlertsPageState extends State<AlertsPage> {
                           ),
                           value: isVibrationOn,
                           onChanged: (bool value) {
-                            _updateSwitchState(value);
+                            setState(() {
+                              isVibrationOn = value;
+                            });
                           },
                           activeColor: Color.fromARGB(255, 229, 172, 240),
                         ),

@@ -15,6 +15,8 @@ import 'package:phone_state/phone_state.dart';
 import 'dart:async';
 import 'theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 const platform = MethodChannel('com.example.call/audio');
 
@@ -70,6 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentImageIndex = 0;
   Timer? sliderTimer;
 
+  static const String apiBase = String.fromEnvironment(
+    'API_BASE',
+    defaultValue: 'http://10.0.2.2:5000',
+  );
+
   @override
   void initState() {
     super.initState();
@@ -121,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (event.status == PhoneStateStatus.CALL_INCOMING) {
           print(" Incoming call detected");
           _updateRealtimeDatabase("PHONE CALLING");
+          _postEventToMongo("phone call");
         } else if (event.status == PhoneStateStatus.CALL_ENDED) {
           print(" Call ended, resetting message to NULL");
           _updateRealtimeDatabase("NULL");
@@ -129,6 +137,21 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       print("Phone permission not granted.");
     }
+  }
+
+  Future<void> _postEventToMongo(String title) async {
+    try {
+      final nowIso = DateTime.now().toUtc().toIso8601String();
+      await http.post(
+        Uri.parse('$apiBase/events/'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          'title': title,
+          'eventAt': nowIso,
+          'source': 'phone_state',
+        }),
+      );
+    } catch (_) {}
   }
 
   Future<void> _updateRealtimeDatabase(String message) async {

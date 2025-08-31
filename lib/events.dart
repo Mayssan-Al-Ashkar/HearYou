@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -22,6 +22,7 @@ class _EventsPageState extends State<EventsPage> {
   FilterType _selectedFilter = FilterType.all;
   Map<String, String> _eventColors = {}; // Holds data from Realtime DB
   bool isNotificationsEnabled = true;
+  Timer? _pollTimer;
 
   @override
   void initState() {
@@ -29,43 +30,41 @@ class _EventsPageState extends State<EventsPage> {
     _fetchEventColors();
     _fetchNotificationSetting();
     _listenToEvents();
+    _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) => _listenToEvents());
     _initializeNotifications();
   }
 
-  Future<void> _fetchEventColors() async {
-    final DatabaseReference ref = FirebaseDatabase.instance.ref().child(
-      'colors',
-    );
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
+  }
 
+  Future<void> _fetchEventColors() async {
     try {
-      DatabaseEvent event = await ref.once();
-      if (event.snapshot.value != null) {
-        final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+      final res = await http.get(Uri.parse('$apiBase/settings/'));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body) as Map<String, dynamic>;
+        final settings = data['settings'] as Map<String, dynamic>?;
+        final colors = (settings?['colors'] as Map<String, dynamic>?) ?? {};
         setState(() {
-          // Store the original keys without modification
-          _eventColors = data.map(
-            (key, value) => MapEntry(key, value.toString()),
-          );
+          _eventColors = colors.map((k, v) => MapEntry(k, v.toString()));
         });
-        print('Fetched colors: $_eventColors');
       }
-    } catch (e) {
-      print('Error fetching colors: $e');
-    }
+    } catch (_) {}
   }
 
   void _fetchNotificationSetting() async {
-    final DatabaseReference ref = FirebaseDatabase.instance.ref(
-      "notification_control",
-    );
-
-    final snapshot = await ref.get();
-    if (snapshot.exists) {
-      final value = snapshot.value.toString();
-      setState(() {
-        isNotificationsEnabled = value == "enable";
-      });
-    }
+    try {
+      final res = await http.get(Uri.parse('$apiBase/settings/'));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body) as Map<String, dynamic>;
+        final settings = data['settings'] as Map<String, dynamic>?;
+        setState(() {
+          isNotificationsEnabled = (settings?['vibration'] == true);
+        });
+      }
+    } catch (_) {}
   }
 
   Future<void> _initializeNotifications() async {
@@ -80,7 +79,7 @@ class _EventsPageState extends State<EventsPage> {
 
   static const String apiBase = String.fromEnvironment(
     'API_BASE',
-    defaultValue: 'http://10.0.2.2:5000',
+    defaultValue: 'http://192.168.0.5:5000',
   );
 
   Future<void> _listenToEvents() async {
@@ -271,11 +270,17 @@ class _EventsPageState extends State<EventsPage> {
                               case 'door knocking':
                                 eventKey = 'door_knocking';
                                 break;
+                              case 'doorbell':
+                                eventKey = 'door_knocking';
+                                break;
                               case 'baby crying':
                                 eventKey = 'baby_crying';
                                 break;
                               case 'phone call':
                                 eventKey = 'phone_call';
+                                break;
+                              case 'other sound':
+                                eventKey = 'additional_event';
                                 break;
                               default:
                                 eventKey = 'additional_event';
@@ -342,6 +347,7 @@ class Event {
   final DateTime date;
   final String time;
   final bool isImportant;
+  final DateTime? eventAt;
 
   Event({
     required this.id,
@@ -350,6 +356,7 @@ class Event {
     required this.date,
     required this.time,
     required this.isImportant,
+    this.eventAt,
   });
 
   factory Event.fromJson(Map<String, dynamic> data) {
@@ -360,6 +367,12 @@ class Event {
     } catch (_) {
       parsedDate = DateTime.now();
     }
+    DateTime? eventAt;
+    try {
+      if (data['eventAt'] != null) {
+        eventAt = DateTime.parse(data['eventAt']).toLocal();
+      }
+    } catch (_) {}
     return Event(
       id: data['id'] ?? '',
       title: data['title'] ?? '',
@@ -367,10 +380,12 @@ class Event {
       date: parsedDate,
       time: data['time'] ?? '',
       isImportant: data['isImportant'] ?? false,
+      eventAt: eventAt,
     );
   }
 
   DateTime get fullDateTime {
+    if (eventAt != null) return eventAt!;
     try {
       final timeParts = time.split(':');
       final hour = int.parse(timeParts[0]);
