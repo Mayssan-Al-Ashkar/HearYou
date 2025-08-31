@@ -6,6 +6,8 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'login.dart';
 
 class LogoutPage extends StatefulWidget {
+  const LogoutPage({super.key});
+
   @override
   _LogoutPageState createState() => _LogoutPageState();
 }

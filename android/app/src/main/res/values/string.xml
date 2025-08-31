@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="app_name">Hear you</string>
+<string name="facebook_app_id">2034488243722567</string>
+<string name="fb_login_protocol_scheme">fb2034488243722567</string>
+<string name="facebook_client_token">a5440db09521e273daefcbb81e38603f</string>
+
+
+</resources>

@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; 
 
 class Help extends StatefulWidget {
+  const Help({super.key});
+
   @override
   _HelpState createState() => _HelpState();
 }
@@ -18,7 +20,7 @@ class _HelpState extends State<Help> {
 
   @override
   void initState() {
-    super.initState();    Future<void> _setUserEmail() async {
+    super.initState();    Future<void> setUserEmail() async {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         
@@ -30,7 +32,7 @@ class _HelpState extends State<Help> {
         });
       }
     }   
-    _setUserEmail();
+    setUserEmail();
   }
 
   Future<void> _setUserEmail() async {

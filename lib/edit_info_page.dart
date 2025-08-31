@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 class EditInfoPage extends StatefulWidget {
-  const EditInfoPage({Key? key}) : super(key: key);
+  const EditInfoPage({super.key});
 
   @override
   _EditInfoPageState createState() => _EditInfoPageState();

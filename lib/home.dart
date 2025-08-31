@@ -27,6 +27,8 @@ void _startCallWithAudio() async {
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -58,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
     {'image': 'images/SOS.png', 'title': 'SOS', 'page': SOSPage()},
   ];
 
-  // Images for slider
   final List<String> sliderImages = [
     'images/image1.jpg',
     'images/image2.jpg',
@@ -118,10 +119,10 @@ class _HomeScreenState extends State<HomeScreen> {
         print("Phone state event: ${event.status}");
 
         if (event.status == PhoneStateStatus.CALL_INCOMING) {
-          print("📞 Incoming call detected");
+          print(" Incoming call detected");
           _updateRealtimeDatabase("PHONE CALLING");
         } else if (event.status == PhoneStateStatus.CALL_ENDED) {
-          print("📴 Call ended, resetting message to NULL");
+          print(" Call ended, resetting message to NULL");
           _updateRealtimeDatabase("NULL");
         }
       });
@@ -134,9 +135,9 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final dbRef = FirebaseDatabase.instance.ref();
       await dbRef.child("Notifications").update({"message": message});
-      print("📲 Realtime Database updated: $message");
+      print(" Realtime Database updated: $message");
     } catch (e) {
-      print("❌ Error updating Realtime Database: $e");
+      print("Error updating Realtime Database: $e");
     }
   }
 
@@ -320,10 +321,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(extendBodyBehindAppBar: true, // <- Important: lets background go under AppBar
+    return Scaffold(extendBodyBehindAppBar: true, 
   appBar: AppBar(
-    backgroundColor: Colors.transparent, // <- transparent
-    elevation: 0, // <- remove shadow
+    backgroundColor: Colors.transparent,
+    elevation: 0, 
     titleSpacing: 16,
     automaticallyImplyLeading: false,
         title: Row(
@@ -351,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 userName,
                 style: TextStyle(
-                  fontSize: 16, // smaller than before
+                  fontSize: 16, 
                   fontWeight: FontWeight.bold,
                   color:
                       Theme.of(context).brightness == Brightness.dark
@@ -411,7 +412,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Padding(padding: const EdgeInsets.all(50.0)),
-            // Image Slider Card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SizedBox(

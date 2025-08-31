@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'signup.dart';
 import 'home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -176,46 +175,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
-  // Future<User?> signInWithFacebook() async {
-  //   try {
-  //     final LoginResult result = await FacebookAuth.instance.login();
-
-  //     if (result.status == LoginStatus.success && result.accessToken != null) {
-  //       final OAuthCredential facebookCredential = FacebookAuthProvider.credential('${result.accessToken?.tokenString}');
-  //       final UserCredential userCredential = await _auth.signInWithCredential(facebookCredential);
-
-  //       if (userCredential.user != null) {
-  //         await FirebaseFirestore.instance
-  //             .collection('users')
-  //             .doc(userCredential.user!.uid)
-  //             .set({
-  //           'email': userCredential.user!.email,
-  //           'name': userCredential.user!.displayName,
-  //           'photoURL': userCredential.user!.photoURL,
-  //           'lastLogin': FieldValue.serverTimestamp(),
-  //         }, SetOptions(merge: true));
-
-  //         Navigator.pushReplacement(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => HomeScreen()),
-  //         );
-  //       }
-
-  //       return userCredential.user;
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text("Facebook login failed. Please try again.")),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     print('Facebook Sign-In Error: \$e');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Facebook sign in failed. Please try again.")),
-  //     );
-  //   }
-  //   return null;
-  // }
 
   @override
   void dispose() {

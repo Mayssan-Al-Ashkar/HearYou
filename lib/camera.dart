@@ -10,7 +10,7 @@ class CameraPage extends StatefulWidget {
 }
 
 class _CameraPageState extends State<CameraPage> {
-  final String videoUrl = 'http://192.168.0.3:5000/video_feed';
+  final String videoUrl = 'http://192.168.0.10:5000/video_feed';
   late final WebViewController _controller;
 
   @override
@@ -29,7 +29,7 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> moveCamera(String direction) async {
     try {
-      final url = Uri.parse('http://192.168.0.3:5000/control/$direction');
+      final url = Uri.parse('http://192.168.0.10:5000/control/$direction');
       await http.get(url);
     } catch (e) {
       print("Move camera failed: $e");
@@ -38,7 +38,7 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> zoom(String action) async {
     try {
-      final url = Uri.parse('http://192.168.0.3:5000/control/$action');
+      final url = Uri.parse('http://192.168.0.10:5000/control/$action');
       await http.get(url);
     } catch (e) {
       print("Zoom failed: $e");
@@ -47,7 +47,7 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> resetZoom() async {
     try {
-      final url = Uri.parse('http://192.168.0.3:5000/reset_zoom');
+      final url = Uri.parse('http://192.168.0.10:5000/reset_zoom');
       await http.get(url);
       print("Zoom reset to default");
     } catch (e) {
@@ -68,7 +68,7 @@ class _CameraPageState extends State<CameraPage> {
         children: [
           const SizedBox(height: 100),
           
-          Container(
+          SizedBox(
             height: MediaQuery.of(context).size.height * 0.4,
             child: WebViewWidget(controller: _controller),
           ),

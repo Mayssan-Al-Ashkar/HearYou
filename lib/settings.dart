@@ -8,6 +8,8 @@ import 'about_us.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
+
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
@@ -125,14 +127,14 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showChangePasswordDialog() {
-    final TextEditingController _currentPasswordController =
+    final TextEditingController currentPasswordController =
         TextEditingController();
-    final TextEditingController _newPasswordController =
+    final TextEditingController newPasswordController =
         TextEditingController();
-    final TextEditingController _confirmPasswordController =
+    final TextEditingController confirmPasswordController =
         TextEditingController();
-    bool _isLoading = false;
-    bool _isCurrentPasswordVisible = false;
+    bool isLoading = false;
+    bool isCurrentPasswordVisible = false;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -146,21 +148,21 @@ class _SettingsPageState extends State<SettingsPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         TextField(
-                          controller: _currentPasswordController,
-                          obscureText: !_isCurrentPasswordVisible,
+                          controller: currentPasswordController,
+                          obscureText: !isCurrentPasswordVisible,
                           decoration: InputDecoration(
                             hintText: 'Current Password',
                             border: OutlineInputBorder(),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _isCurrentPasswordVisible
+                                isCurrentPasswordVisible
                                     ? Icons.visibility
                                     : Icons.visibility_off,
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _isCurrentPasswordVisible =
-                                      !_isCurrentPasswordVisible;
+                                  isCurrentPasswordVisible =
+                                      !isCurrentPasswordVisible;
                                 });
                               },
                             ),
@@ -168,22 +170,22 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         SizedBox(height: 16),
                         TextField(
-                          controller: _newPasswordController,
-                          obscureText: !_isCurrentPasswordVisible,
+                          controller: newPasswordController,
+                          obscureText: !isCurrentPasswordVisible,
                           decoration: InputDecoration(
                             hintText: 'New Password',
                             border: OutlineInputBorder(),
                             helperText: 'At least 6 characters',
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _isCurrentPasswordVisible
+                                isCurrentPasswordVisible
                                     ? Icons.visibility
                                     : Icons.visibility_off,
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _isCurrentPasswordVisible =
-                                      !_isCurrentPasswordVisible;
+                                  isCurrentPasswordVisible =
+                                      !isCurrentPasswordVisible;
                                 });
                               },
                             ),
@@ -191,21 +193,21 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         SizedBox(height: 16),
                         TextField(
-                          controller: _confirmPasswordController,
-                          obscureText: !_isCurrentPasswordVisible,
+                          controller: confirmPasswordController,
+                          obscureText: !isCurrentPasswordVisible,
                           decoration: InputDecoration(
                             hintText: 'Confirm New Password',
                             border: OutlineInputBorder(),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _isCurrentPasswordVisible
+                                isCurrentPasswordVisible
                                     ? Icons.visibility
                                     : Icons.visibility_off,
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _isCurrentPasswordVisible =
-                                      !_isCurrentPasswordVisible;
+                                  isCurrentPasswordVisible =
+                                      !isCurrentPasswordVisible;
                                 });
                               },
                             ),
@@ -217,17 +219,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   actions: [
                     TextButton(
                       onPressed:
-                          _isLoading ? null : () => Navigator.pop(context),
+                          isLoading ? null : () => Navigator.pop(context),
                       child: Text('Cancel'),
                     ),
                     ElevatedButton(
                       onPressed:
-                          _isLoading
+                          isLoading
                               ? null
                               : () async {
-                                if (_currentPasswordController.text.isEmpty ||
-                                    _newPasswordController.text.isEmpty ||
-                                    _confirmPasswordController.text.isEmpty) {
+                                if (currentPasswordController.text.isEmpty ||
+                                    newPasswordController.text.isEmpty ||
+                                    confirmPasswordController.text.isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text('Please fill all fields'),
@@ -236,8 +238,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                   return;
                                 }
 
-                                if (_newPasswordController.text !=
-                                    _confirmPasswordController.text) {
+                                if (newPasswordController.text !=
+                                    confirmPasswordController.text) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -248,7 +250,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   return;
                                 }
 
-                                if (_newPasswordController.text.length < 6) {
+                                if (newPasswordController.text.length < 6) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -259,7 +261,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   return;
                                 }
 
-                                setState(() => _isLoading = true);
+                                setState(() => isLoading = true);
 
                                 try {
                                   final user =
@@ -269,14 +271,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                         EmailAuthProvider.credential(
                                           email: user.email!,
                                           password:
-                                              _currentPasswordController.text,
+                                              currentPasswordController.text,
                                         );
 
                                     await user.reauthenticateWithCredential(
                                       credential,
                                     );
                                     await user.updatePassword(
-                                      _newPasswordController.text,
+                                      newPasswordController.text,
                                     );
                                     await FirebaseAuth.instance.signOut();
 
@@ -311,7 +313,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     );
                                   }
                                 } on FirebaseAuthException catch (e) {
-                                  setState(() => _isLoading = false);
+                                  setState(() => isLoading = false);
                                   String errorMessage =
                                       'Failed to change password';
                                   if (e.code == 'wrong-password') {
@@ -324,7 +326,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     SnackBar(content: Text(errorMessage)),
                                   );
                                 } catch (e) {
-                                  setState(() => _isLoading = false);
+                                  setState(() => isLoading = false);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -335,7 +337,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 }
                               },
                       child:
-                          _isLoading
+                          isLoading
                               ? SizedBox(
                                 height: 20,
                                 width: 20,
