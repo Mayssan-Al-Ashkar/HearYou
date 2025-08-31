@@ -1,4 +1,4 @@
-# seniorapp
+# HearYou
 
 A new Flutter project.
 
