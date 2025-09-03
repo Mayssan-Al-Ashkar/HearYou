@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'alerts.dart';
 import 'events.dart';
 import 'sos.dart';
@@ -29,7 +28,8 @@ void _startCallWithAudio() async {
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final bool showTutorialOnOpen;
+  const HomeScreen({super.key, this.showTutorialOnOpen = false});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -81,13 +81,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadUserData();
-    _checkAndShowTutorial();
     _listenToPhoneCalls();
     _startImageSlider();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _createTutorialTargets();
-      _showTutorial();
+      if (widget.showTutorialOnOpen) {
+        _showTutorial();
+      }
     });
   }
 
@@ -105,18 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  Future<void> _checkAndShowTutorial() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool hasShownTutorial = prefs.getBool('hasShownTutorial') ?? false;
-
-    if (!hasShownTutorial) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _createTutorialTargets();
-        _showTutorial();
-        prefs.setBool('hasShownTutorial', true);
-      });
-    }
-  }
+  // Tutorial is only shown when HomeScreen is opened from a fresh login
 
   Future<void> _listenToPhoneCalls() async {
     final phonePermission = await Permission.phone.request();

@@ -6,6 +6,7 @@ import 'help.dart';
 import 'logout.dart';
 import 'about_us.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -35,6 +36,15 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _loadNotificationSetting() async {
+    // Load locally first for instant UI, then sync from Firestore if available
+    final prefs = await SharedPreferences.getInstance();
+    final localValue = prefs.getBool('notificationsEnabled');
+    if (localValue != null) {
+      setState(() {
+        isNotificationsEnabled = localValue;
+      });
+    }
+
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       DocumentSnapshot doc =
@@ -43,6 +53,7 @@ class _SettingsPageState extends State<SettingsPage> {
         setState(() {
           isNotificationsEnabled = doc['notificationsEnabled'] ?? true;
         });
+        await prefs.setBool('notificationsEnabled', isNotificationsEnabled);
       }
     }
   }
@@ -511,6 +522,20 @@ class _SettingsPageState extends State<SettingsPage> {
                           isNotificationsEnabled = value;
                         });
 
+                        // Persist locally (device)
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('notificationsEnabled', value);
+
+                        // Persist in Firestore for the current user
+                        final uid = FirebaseAuth.instance.currentUser?.uid;
+                        if (uid != null) {
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(uid)
+                              .set({'notificationsEnabled': value}, SetOptions(merge: true));
+                        }
+
+                        // Optional: notify other services via Realtime DB
                         final DatabaseReference ref = FirebaseDatabase.instance
                             .ref("notification_control");
                         await ref.set(value ? "enable" : "disable");
