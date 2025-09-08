@@ -9,9 +9,7 @@ class AboutUs extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: isDarkMode
-            ? Colors.black
-            : const Color.fromARGB(255, 236, 184, 201),
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
         title: Text(
           'About Us',
           style: TextStyle(
@@ -28,32 +26,12 @@ class AboutUs extends StatelessWidget {
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors:
-                isDarkMode
-                    ? [Colors.black, Colors.grey[900]!, Colors.black87]
-                    : [
-                      Color.fromARGB(255, 236, 184, 201),
-                      Colors.white,
-                      Color.fromARGB(255, 212, 184, 243),
-                    ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          color: isDarkMode ? Colors.black : Colors.white,
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListView(
             children: [
-              const SizedBox(height: 20),
-              Text(
-                'Developed by: Mayssan Al Ashkar',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-              ),
               const SizedBox(height: 20),
               Center(
                 child: Text(
@@ -89,7 +67,19 @@ class AboutUs extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.email, color: isDarkMode ? Colors.white : Colors.black),
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: isDarkMode
+                            ? [Colors.deepPurpleAccent, Color(0xFF7E57C2)]
+                            : [Color(0xFFF0B8F6), Color(0xFFE0C4FF)],
+                      ),
+                    ),
+                    child: Icon(Icons.email, color: Colors.white, size: 18),
+                  ),
                   const SizedBox(width: 10),
                   Text(
                     'hear.you.mt@gmail.com',
@@ -102,7 +92,19 @@ class AboutUs extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.phone, color: isDarkMode ? Colors.white : Colors.black),
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: isDarkMode
+                            ? [Colors.deepPurpleAccent, Color(0xFF7E57C2)]
+                            : [Color(0xFFF0B8F6), Color(0xFFE0C4FF)],
+                      ),
+                    ),
+                    child: Icon(Icons.phone, color: Colors.white, size: 18),
+                  ),
                   const SizedBox(width: 10),
                   Text(
                     '+96176722215',
@@ -111,6 +113,19 @@ class AboutUs extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 40),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  'Developed by: Mayssan Al Ashkar',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ],
           ),

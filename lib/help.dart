@@ -53,17 +53,23 @@ class _HelpState extends State<Help> {
   InputDecoration _inputDecoration(String label) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return InputDecoration(
-      labelText: label,
+      hintText: label,
       filled: true,
-      fillColor: isDark ? Colors.grey[800] : Colors.white,
-      labelStyle: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
+      fillColor: isDark ? Colors.black45 : Colors.white,
+      hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.black54),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.purple),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1.2),
       ),
+      prefixIconColor: isDark ? Colors.white : null,
     );
   }
 
@@ -104,25 +110,14 @@ class _HelpState extends State<Help> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text("Help / Contact"),
+        title: Text("Help / Contact", style: TextStyle(color: isDark ? Colors.white : Colors.black)),
         leading: BackButton(color: isDark ? Colors.white : Colors.black),
-        backgroundColor: Colors.transparent,
+        backgroundColor: isDark ? Colors.black : Colors.white,
         elevation: 0,
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors:
-                isDark
-                    ? [Colors.black, Colors.grey[900]!, Colors.black87]
-                    : [
-                      Color.fromARGB(255, 236, 184, 201),
-                      Colors.white,
-                      Color.fromARGB(255, 212, 184, 243),
-                    ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          color: isDark ? Colors.black : Colors.white,
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -142,11 +137,17 @@ class _HelpState extends State<Help> {
         ),
       ),
       SizedBox(height: 4),
-      Text(
-        _nameController.text.isNotEmpty ? _nameController.text : 'N/A',
-        style: TextStyle(
-          fontSize: 16,
-          color: isDark ? Colors.white : Colors.black,
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.black45 : Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: isDark ? Colors.white : Colors.black, width: 1),
+        ),
+        child: Text(
+          _nameController.text.isNotEmpty ? _nameController.text : 'N/A',
+          style: TextStyle(fontSize: 16, color: isDark ? Colors.white : Colors.black),
         ),
       ),
       SizedBox(height: 16),
@@ -158,11 +159,17 @@ class _HelpState extends State<Help> {
         ),
       ),
       SizedBox(height: 4),
-      Text(
-        _emailController.text.isNotEmpty ? _emailController.text : 'N/A',
-        style: TextStyle(
-          fontSize: 16,
-          color: isDark ? Colors.white : Colors.black,
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.black45 : Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: isDark ? Colors.white : Colors.black, width: 1),
+        ),
+        child: Text(
+          _emailController.text.isNotEmpty ? _emailController.text : 'N/A',
+          style: TextStyle(fontSize: 16, color: isDark ? Colors.white : Colors.black),
         ),
       ),
       SizedBox(height: 20),
@@ -187,7 +194,7 @@ class _HelpState extends State<Help> {
                           color: isDark ? Colors.white : Colors.black)),
                   value: "General information / Contact",
                   groupValue: _selectedSubject,
-                  activeColor: Colors.purple,
+                  activeColor: isDark ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
                   onChanged: (value) {
                     setState(() {
                       _selectedSubject = value!;
@@ -200,7 +207,7 @@ class _HelpState extends State<Help> {
                           color: isDark ? Colors.white : Colors.black)),
                   value: "Suggest a feature",
                   groupValue: _selectedSubject,
-                  activeColor: Colors.purple,
+                  activeColor: isDark ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
                   onChanged: (value) {
                     setState(() {
                       _selectedSubject = value!;
@@ -213,7 +220,7 @@ class _HelpState extends State<Help> {
                           color: isDark ? Colors.white : Colors.black)),
                   value: "Report a Problem",
                   groupValue: _selectedSubject,
-                  activeColor: Colors.purple,
+                  activeColor: isDark ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
                   onChanged: (value) {
                     setState(() {
                       _selectedSubject = value!;
@@ -229,16 +236,17 @@ class _HelpState extends State<Help> {
                 SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 227, 148, 240),
-                    padding: EdgeInsets.symmetric(horizontal: 60, vertical: 14),
+                    minimumSize: const Size(250, 50),
+                    backgroundColor: isDark ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(30),
                     ),
+                    elevation: 0,
                   ),
                   onPressed: sendFormspreeEmail,
-                  child: Text(
+                  child: const Text(
                     "Send",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
                 SizedBox(height: 30),

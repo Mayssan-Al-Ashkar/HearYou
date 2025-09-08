@@ -138,21 +138,7 @@ class _AlertsPageState extends State<AlertsPage> {
   ),
   body: Container(
     decoration: BoxDecoration(
-      gradient: isDarkMode
-          ? LinearGradient(
-              colors: [Colors.black, Colors.grey[900]!, Colors.black87],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            )
-          : LinearGradient(
-              colors: [
-                Color.fromARGB(255, 236, 184, 201),
-                Colors.white,
-                Color.fromARGB(255, 212, 184, 243),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+      color: isDarkMode ? Colors.black : Colors.white,
     ),
     child: SafeArea(
       child: Padding(
@@ -178,15 +164,28 @@ class _AlertsPageState extends State<AlertsPage> {
                           return Column(
                             children: [
                               Card(
-                                color:
-                                    isDarkMode
-                                        ? Colors.grey[850]
-                                        : Colors.white,
+                                color: Colors.transparent,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
-                                elevation: 4,
-                                child: ListTile(
+                                elevation: 0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: isDarkMode
+                                          ? [Color(0xFF1F1A24), Color(0xFF2A2234)]
+                                          : [Colors.white, Color(0xFFF7ECFF)],
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: isDarkMode
+                                          ? Colors.deepPurpleAccent.withOpacity(0.25)
+                                          : Color(0xFFE5D6F8),
+                                    ),
+                                  ),
+                                  child: ListTile(
                                   title: Text(
                                     eventDisplayNames[action] ?? action,
                                     style: TextStyle(
@@ -254,6 +253,7 @@ class _AlertsPageState extends State<AlertsPage> {
                                         }).toList(),
                                   ),
                                 ),
+                                ),
                               ),
                               SizedBox(
                                 height: 15,
@@ -267,23 +267,21 @@ class _AlertsPageState extends State<AlertsPage> {
                             onPressed: _saveSettingsToMongo,
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 40,
-                                vertical: 12,
+                                horizontal: 80,
+                                vertical: 15,
                               ),
-                              backgroundColor: Color.fromARGB(
-                                255,
-                                243,
-                                175,
-                                244,
-                              ),
+                              backgroundColor: isDarkMode
+                                  ? Colors.deepPurpleAccent
+                                  : Color(0xFFF0B8F6),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(30),
                               ),
+                              elevation: 0,
                             ),
                             child: Text(
                               "Save Colors",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
@@ -306,7 +304,9 @@ class _AlertsPageState extends State<AlertsPage> {
                               isVibrationOn = value;
                             });
                           },
-                          activeColor: Color.fromARGB(255, 229, 172, 240),
+                          activeColor: isDarkMode
+                              ? Colors.deepPurpleAccent
+                              : Color.fromARGB(255, 229, 172, 240),
                         ),
                       ],
                     ),

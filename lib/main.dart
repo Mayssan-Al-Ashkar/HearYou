@@ -14,9 +14,12 @@ import 'package:firebase_database/firebase_database.dart';
 import 'theme_provider.dart';
 import 'login.dart';
 import 'home.dart';
+import 'weekly_report_page.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 const AndroidNotificationChannel defaultAndroidChannel = AndroidNotificationChannel(
   'high_importance_channel',
@@ -85,6 +88,16 @@ void main() async {
             ),
           ),
         );
+      }
+    } catch (_) {}
+  });
+
+  // Handle notification taps when the app is in background
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    try {
+      final data = message.data;
+      if (data['type'] == 'weekly_report') {
+        navigatorKey.currentState?.pushNamed('/weeklyReport');
       }
     } catch (_) {}
   });
@@ -160,6 +173,17 @@ void main() async {
       child: const MyApp(),
     ),
   );
+
+  // Handle notification tap when app launched from terminated state
+  try {
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null && initialMessage.data['type'] == 'weekly_report') {
+      // Delay to ensure navigator is ready
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        navigatorKey.currentState?.pushNamed('/weeklyReport');
+      });
+    }
+  } catch (_) {}
 }
 
 class MyApp extends StatelessWidget {
@@ -170,6 +194,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
+          navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
@@ -177,6 +202,7 @@ class MyApp extends StatelessWidget {
           home: SplashScreen(),
           routes: {
             "/home": (context) => HomeScreen(showTutorialOnOpen: false),
+            "/weeklyReport": (context) => WeeklyReportPage(),
           },
         );
       },

@@ -176,70 +176,59 @@ class SOSPage extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: isDarkMode
-            ? BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor)
-            : const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color.fromARGB(255, 236, 184, 201),
-                    Colors.white,
-                    Color.fromARGB(255, 212, 184, 243),
-                  ],
-                ),
-              ),
+        decoration: BoxDecoration(
+          color: isDarkMode ? Colors.black : Colors.white,
+        ),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: iconColor ?? Colors.black),
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.transparent,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "• In case of emergency, press 'Call Now' and a call will be made to your emergency number.",
-                        style: TextStyle(
-                          color: iconColor,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "• Press 'Send SMS Now' so that your location will reach him as message.",
-                        style: TextStyle(
-                          color: iconColor,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
+                  padding: const EdgeInsets.only(left: 12, right: 12, top: 0, bottom: 12),
+                  child: Text(
+                    "• In case of emergency, press 'Call Now' and a call will be made to your emergency number.",
+                    style: TextStyle(
+                      color: iconColor,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 20),
 
                 // Call Button
-                _buildButton(
-                  text: "Call Now",
-                  onPressed: () => _startEmergencyProcedure(context),
+                _buildActionCard(
+                  title: "Call Now",
+                  icon: Icons.call,
                   isDarkMode: isDarkMode,
+                  onTap: () => _startEmergencyProcedure(context),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
+
+                // Second sentence between buttons
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    "• Press 'Send SMS Now' so that your location will reach him as message.",
+                    style: TextStyle(
+                      color: iconColor,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
 
                 // SMS Button
-                _buildButton(
-                  text: "Send SMS Now",
-                  onPressed: () => _sendSmsDirect(context),
+                _buildActionCard(
+                  title: "Send SMS Now",
+                  icon: Icons.sms,
                   isDarkMode: isDarkMode,
+                  onTap: () => _sendSmsDirect(context),
                 ),
               ],
             ),
@@ -249,24 +238,66 @@ class SOSPage extends StatelessWidget {
     );
   }
 
-  Widget _buildButton({
-    required String text,
-    required VoidCallback onPressed,
+  Widget _buildActionCard({
+    required String title,
+    required IconData icon,
     required bool isDarkMode,
+    required VoidCallback onTap,
   }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        fixedSize: const Size(200, 160), // <-- fixed width & height
-        backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        elevation: 2,
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 16,
-          color: isDarkMode ? Colors.white : Colors.black,
+    return SizedBox(
+      width: 240,
+      height: 150,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 0,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isDarkMode
+                    ? [Color(0xFF1F1A24), Color(0xFF2A2234)]
+                    : [Colors.white, Color(0xFFF7ECFF)],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDarkMode
+                    ? Colors.deepPurpleAccent.withOpacity(0.25)
+                    : Color(0xFFE5D6F8),
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: isDarkMode
+                          ? [Colors.deepPurpleAccent, Color(0xFF7E57C2)]
+                          : [Color(0xFFF0B8F6), Color(0xFFE0C4FF)],
+                    ),
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 28),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

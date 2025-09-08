@@ -128,19 +128,18 @@ void _showTermsDialog() {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDarkMode
-                ? [Colors.black, Colors.grey[900]!, Colors.black87]
-                : [
-                    Color.fromARGB(255, 236, 184, 201),
-                    Colors.white,
-                    Color.fromARGB(255, 212, 184, 243),
-                  ],
-          ),
-        ),
+        decoration:
+            isDarkMode
+                ? BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Colors.black, Colors.grey[900]!, Colors.black87],
+                  ),
+                )
+                : BoxDecoration(
+                  color: Colors.white,
+                ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
@@ -239,7 +238,7 @@ void _showTermsDialog() {
                       ),
                       backgroundColor: isDarkMode
                           ? Colors.deepPurpleAccent
-                          : Color.fromARGB(255, 225, 141, 239),
+                          : Color(0xFFF0B8F6),
                     ),
                     child: _isLoading
                         ? CircularProgressIndicator(color: Colors.white)

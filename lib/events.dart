@@ -193,58 +193,39 @@ class _EventsPageState extends State<EventsPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ToggleButtons(
-              isSelected: [
-                _selectedFilter == FilterType.all,
-                _selectedFilter == FilterType.today,
-                _selectedFilter == FilterType.yesterday,
-                _selectedFilter == FilterType.before,
-                _selectedFilter == FilterType.favorite,
-              ],
-              onPressed: (index) {
-                setState(() {
-                  _selectedFilter = FilterType.values[index];
-                });
-              },
-              children: const [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Text('All'),
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDarkMode
+                      ? [const Color(0xFF1F1A24), const Color(0xFF2A2234)]
+                      : [Colors.white, const Color(0xFFF7ECFF)],
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Text('Today'),
+                border: Border.all(
+                  color: isDarkMode
+                      ? Colors.deepPurpleAccent.withOpacity(0.25)
+                      : const Color(0xFFE5D6F8),
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Text('Yesterday'),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Text('Before'),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Text('Favorite'),
-                ),
-              ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildFilterChip(context, 'All', FilterType.all, isDarkMode),
+                  _buildFilterChip(context, 'Today', FilterType.today, isDarkMode),
+                  _buildFilterChip(context, 'Yesterday', FilterType.yesterday, isDarkMode),
+                  _buildFilterChip(context, 'Before', FilterType.before, isDarkMode),
+                  _buildFilterChip(context, 'Favorite', FilterType.favorite, isDarkMode),
+                ],
+              ),
             ),
           ),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors:
-                      isDarkMode
-                          ? [Colors.black, Colors.grey[900]!, Colors.black87]
-                          : [
-                            const Color.fromARGB(255, 236, 184, 201),
-                            Colors.white,
-                            const Color.fromARGB(255, 212, 184, 243),
-                          ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                color: isDarkMode ? Colors.black : Colors.white,
               ),
               child:
                   filteredEvents.isEmpty
@@ -314,6 +295,36 @@ class _EventsPageState extends State<EventsPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(BuildContext context, String label, FilterType type, bool isDarkMode) {
+    final bool isActive = _selectedFilter == type;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedFilter = type),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            color: isActive
+                ? (isDarkMode ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6))
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: isActive
+                    ? Colors.white
+                    : (isDarkMode ? Colors.white70 : Colors.black87),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

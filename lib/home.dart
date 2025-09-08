@@ -106,8 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  // Tutorial is only shown when HomeScreen is opened from a fresh login
-
   Future<void> _listenToPhoneCalls() async {
     final phonePermission = await Permission.phone.request();
 
@@ -413,14 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors:
-                isDarkMode
-                    ? [Colors.black, Colors.grey[900]!, Colors.black87]
-                    : [Color(0xFFECB8C9), Colors.white, Color(0xFFD4B8F3)],
-          ),
+          color: isDarkMode ? Colors.black : Colors.white,
         ),
         child: Column(
           children: [
@@ -502,23 +493,70 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Card(
                       key: key,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 0,
-                      color: isDarkMode ? Colors.grey[850] : Colors.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(item['image'], height: 50),
-                          SizedBox(height: 10),
-                          Text(
-                            item['title'],
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: isDarkMode
+                                ? [Color(0xFF1F1A24), Color(0xFF2A2234)]
+                                : [Colors.white, Color(0xFFF7ECFF)],
                           ),
-                        ],
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isDarkMode
+                                ? Colors.deepPurpleAccent.withOpacity(0.25)
+                                : Color(0xFFE5D6F8),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDarkMode
+                                  ? Colors.transparent
+                                  : Color(0xFFB388FF).withOpacity(0.08),
+                              blurRadius: 16,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  colors: isDarkMode
+                                      ? [Colors.deepPurpleAccent, Color(0xFF7E57C2)]
+                                      : [Color(0xFFF0B8F6), Color(0xFFE0C4FF)],
+                                ),
+                              ),
+                              child: Icon(
+                                item['title'] == 'Camera'
+                                    ? Icons.photo_camera
+                                    : item['title'] == 'Alerts'
+                                    ? Icons.notifications_active
+                                    : item['title'] == 'Events'
+                                    ? Icons.event_note
+                                    : Icons.emergency,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              item['title'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

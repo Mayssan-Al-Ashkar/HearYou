@@ -199,23 +199,14 @@ class _LogoutPageState extends State<LogoutPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Logout'),
+        title: Text('Logout', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
         backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: isDarkMode ? Colors.white : Colors.black),
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors:
-                isDarkMode
-                    ? [Colors.black, Colors.grey[900]!, Colors.black87]
-                    : [
-                      Color.fromARGB(255, 236, 184, 201),
-                      Colors.white,
-                      Color.fromARGB(255, 212, 184, 243),
-                    ],
-          ),
+          color: isDarkMode ? Colors.black : Colors.white,
         ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -270,23 +261,23 @@ class _LogoutPageState extends State<LogoutPage> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _logout,
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  backgroundColor:
-                      isDarkMode
-                          ? Colors.deepPurpleAccent
-                          : Color.fromARGB(255, 225, 141, 239),
+                  minimumSize: const Size(250, 50),
+                  backgroundColor: isDarkMode ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 0,
                 ),
-                child:
-                    _isLoading
-                        ? CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                          "LOGOUT",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        "LOGOUT",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
+                      ),
               ),
             ],
           ),

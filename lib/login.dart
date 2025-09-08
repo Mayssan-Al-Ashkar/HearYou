@@ -189,20 +189,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors:
-                isDarkMode
-                    ? [Colors.black, Colors.grey[900]!, Colors.black87]
-                    : [
-                      Color.fromARGB(255, 236, 184, 201),
-                      Colors.white,
-                      Color.fromARGB(255, 212, 184, 243),
-                    ],
-          ),
-        ),
+        decoration:
+            isDarkMode
+                ? BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Colors.black, Colors.grey[900]!, Colors.black87],
+                  ),
+                )
+                : BoxDecoration(
+                  color: Colors.white,
+                ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
           child: Center(
@@ -210,6 +208,11 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Image.asset(
+                    'images/logo.png',
+                    height: 100,
+                  ),
+                  const SizedBox(height: 12),
                   Text(
                     "Login",
                     style: TextStyle(
@@ -263,10 +266,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       backgroundColor:
                           isDarkMode
                               ? Colors.deepPurpleAccent
-                              : const Color.fromARGB(255, 248, 205, 247),
+                              : const Color(0xFFF0B8F6),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(30),
                       ),
                       elevation: 0,
                     ),
@@ -287,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 20),
                   Text(
-                    "Or Sign Up Using",
+                    "or",
                     style: TextStyle(
                       color: isDarkMode ? Colors.white70 : Colors.black54,
                     ),
@@ -309,11 +311,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(width: 10),
                             Text(
                               "Continue with Google",
-                              style: TextStyle(color: Colors.black),
+                              style: TextStyle(color: Colors.white),
                             ),
                           ],
                         ),
-                        color: const Color.fromARGB(255, 248, 205, 247),
+                        color: isDarkMode
+                            ? Colors.deepPurpleAccent
+                            : const Color(0xFFF0B8F6),
                         onPressed: () async {
                           try {
                             await GoogleSignIn().signOut();
@@ -335,11 +339,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(builder: (context) => SignUpScreen()),
                       );
                     },
-                    child: Text(
-                      "SIGN UP",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
+                    child: Text.rich(
+                      TextSpan(
+                        text: "Don't have an account? ",
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white70 : Colors.black54,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "Signup",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -410,10 +424,18 @@ class InputField extends StatelessWidget {
               color: isDarkMode ? Colors.white54 : Colors.black54,
             ),
             filled: true,
-            fillColor: isDarkMode ? Colors.black45 : Colors.white70,
+            fillColor: isDarkMode ? Colors.black45 : Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.black, width: 1),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.black, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.black, width: 1.2),
             ),
           ),
         ),
@@ -440,13 +462,13 @@ class SocialButton extends StatelessWidget {
       width: 250,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(30),
           onTap: onPressed,
           child: Center(child: icon),
         ),

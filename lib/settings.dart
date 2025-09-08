@@ -364,15 +364,50 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildSettingsCard({
+    required IconData icon,
+    required String title,
+    required bool isDarkMode,
+    VoidCallback? onTap,
+    Widget? trailing,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: isDarkMode
+                  ? [Colors.deepPurpleAccent, const Color(0xFF7E57C2)]
+                  : [const Color(0xFFF0B8F6), const Color(0xFFE0C4FF)],
+            ),
+          ),
+          child: Icon(icon, color: Colors.white, size: 22),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
+        trailing: trailing ?? Icon(Icons.arrow_forward_ios, color: isDarkMode ? Colors.white70 : Colors.black54),
+        onTap: onTap,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    Color backgroundColor =
-        isDarkMode ? Colors.black : Color.fromARGB(255, 236, 184, 201);
+    // Background now controlled via AppBar flexibleSpace + body color
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: backgroundColor,
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        elevation: 0,
         title: Text(
           'Settings',
           style: TextStyle(
@@ -393,18 +428,7 @@ class _SettingsPageState extends State<SettingsPage> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors:
-                isDarkMode
-                    ? [Colors.black, Colors.grey[900]!, Colors.black87]
-                    : [
-                      Color.fromARGB(255, 236, 184, 201),
-                      Colors.white,
-                      Color.fromARGB(255, 212, 184, 243),
-                    ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          color: isDarkMode ? Colors.black : Colors.white,
         ),
         child: SingleChildScrollView(
           child: ConstrainedBox(
@@ -479,27 +503,22 @@ class _SettingsPageState extends State<SettingsPage> {
                     'Profile',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  ListTile(
-                    leading: Image.asset('images/changename.png', width: 30),
-                    title: Text(
-                      'Change Name',
-                      style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                    ),
-                    trailing: Icon(Icons.arrow_forward_ios),
+                  _buildSettingsCard(
+                    icon: Icons.drive_file_rename_outline,
+                    title: 'Change Name',
+                    isDarkMode: isDarkMode,
                     onTap: _showNameChangeDialog,
                   ),
-                  ListTile(
-                    leading: Image.asset('images/changepass.png', width: 30),
-                    title: Text('Change Password'),
-                    trailing: Icon(Icons.arrow_forward_ios),
+                  _buildSettingsCard(
+                    icon: Icons.lock_outline,
+                    title: 'Change Password',
+                    isDarkMode: isDarkMode,
                     onTap: _showChangePasswordDialog,
                   ),
-                  ListTile(
-                    leading: Image.asset('images/editprofile.png', width: 30),
-                    title: Text('Edit Info'),
-                    trailing: Icon(Icons.arrow_forward_ios),
+                  _buildSettingsCard(
+                    icon: Icons.edit,
+                    title: 'Edit Info',
+                    isDarkMode: isDarkMode,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -512,11 +531,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     'Notifications',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  ListTile(
-                    leading: Image.asset('images/notification.png', width: 30),
-                    title: Text('Notifications'),
+                  _buildSettingsCard(
+                    icon: Icons.notifications_active_outlined,
+                    title: 'Notifications',
+                    isDarkMode: isDarkMode,
                     trailing: Switch(
                       value: isNotificationsEnabled,
+                      activeColor: isDarkMode ? Colors.deepPurpleAccent : Color(0xFFF0B8F6),
                       onChanged: (bool value) async {
                         setState(() {
                           isNotificationsEnabled = value;
@@ -542,15 +563,23 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                     ),
                   ),
+                  _buildSettingsCard(
+                    icon: Icons.description_outlined,
+                    title: 'Weekly Reports',
+                    isDarkMode: isDarkMode,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/weeklyReport');
+                    },
+                  ),
                   SizedBox(height: 10),
                   Text(
                     'Account',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  ListTile(
-                    leading: Image.asset('images/logout.png', width: 30),
-                    title: Text('Log Out'),
-                    trailing: Icon(Icons.arrow_forward_ios),
+                  _buildSettingsCard(
+                    icon: Icons.logout,
+                    title: 'Log Out',
+                    isDarkMode: isDarkMode,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -563,10 +592,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     'About',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  ListTile(
-                    leading: Image.asset('images/about.png', width: 27),
-                    title: Text('About Us'),
-                    trailing: Icon(Icons.arrow_forward_ios),
+                  _buildSettingsCard(
+                    icon: Icons.info_outline,
+                    title: 'About Us',
+                    isDarkMode: isDarkMode,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -574,17 +603,15 @@ class _SettingsPageState extends State<SettingsPage> {
                       );
                     },
                   ),
-                  ListTile(
-                    leading: Image.asset('images/help.png', width: 40),
-                    title: Text('Help'),
-                    trailing: Icon(Icons.arrow_forward_ios),
+                  _buildSettingsCard(
+                    icon: Icons.help_outline,
+                    title: 'Help',
+                    isDarkMode: isDarkMode,
                     onTap: () {
                       Navigator.push(
                         context,
                         PageRouteBuilder(
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  Help(),
+                          pageBuilder: (context, animation, secondaryAnimation) => Help(),
                           transitionsBuilder: (
                             context,
                             animation,
@@ -594,15 +621,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             const begin = Offset(1.0, 0.0);
                             const end = Offset.zero;
                             const curve = Curves.ease;
-
-                            var tween = Tween(
-                              begin: begin,
-                              end: end,
-                            ).chain(CurveTween(curve: curve));
-                            return SlideTransition(
-                              position: animation.drive(tween),
-                              child: child,
-                            );
+                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            return SlideTransition(position: animation.drive(tween), child: child);
                           },
                         ),
                       );

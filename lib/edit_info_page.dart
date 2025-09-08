@@ -153,66 +153,55 @@ class _EditInfoPageState extends State<EditInfoPage> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final cardColor =
-        isDarkMode ? Colors.grey[800]! : Colors.white.withOpacity(0.8);
+    final inputFillColor = isDarkMode ? Colors.black45 : Colors.white;
     final iconColor = isDarkMode ? Colors.white : Colors.black;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors:
-              isDarkMode
-                  ? [Colors.black, Colors.grey[900]!, Colors.black87]
-                  : [
-                    Color.fromARGB(255, 236, 184, 201),
-                    Colors.white,
-                    Color.fromARGB(255, 212, 184, 243),
-                  ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    return Scaffold(
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      appBar: AppBar(
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        elevation: 0,
+        title: Text('Edit Info', style: TextStyle(color: iconColor)),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: iconColor),
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text('Edit Info', style: TextStyle(color: iconColor)),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: iconColor),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _buildTextField(
-                _addressController,
-                'Home Address',
-                Icons.home,
-                TextInputType.multiline,
-                cardColor,
-                maxLines: 2,
-              ),
-              const SizedBox(height: 20),
-              _buildButton('Update Address', _updateAddress),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Set your default location and phone number to be used in case of emergency.",
+              style: TextStyle(color: iconColor.withOpacity(0.8), fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            _buildTextField(
+              _addressController,
+              'Home Address',
+              Icons.home,
+              TextInputType.multiline,
+              inputFillColor,
+              maxLines: 2,
+            ),
+            const SizedBox(height: 20),
+            _buildPrimaryButton('Update Address', _updateAddress, isDarkMode),
 
-              const SizedBox(height: 30),
-              _buildTextField(
-                _emergencyPhoneController,
-                'Emergency Phone Number',
-                Icons.phone,
-                TextInputType.phone,
-                cardColor,
-              ),
-              const SizedBox(height: 20),
-              _buildButton('Update Emergency Number', _updateEmergencyNumber),
+            const SizedBox(height: 30),
+            _buildTextField(
+              _emergencyPhoneController,
+              'Emergency Phone Number',
+              Icons.phone,
+              TextInputType.phone,
+              inputFillColor,
+            ),
+            const SizedBox(height: 20),
+            _buildPrimaryButton('Update Emergency Number', _updateEmergencyNumber, isDarkMode),
 
-              const SizedBox(height: 32),
-              Divider(color: Colors.black54),
-            ],
-          ),
+            const SizedBox(height: 32),
+            Divider(color: isDarkMode ? Colors.white24 : Colors.black26),
+          ],
         ),
       ),
     );
@@ -226,41 +215,47 @@ class _EditInfoPageState extends State<EditInfoPage> {
     Color fillColor, {
     int maxLines = 1,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: fillColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: TextField(
-        controller: controller,
-        keyboardType: type,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(icon),
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    return TextField(
+      controller: controller,
+      keyboardType: type,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: isDarkMode ? Colors.white : null),
+        hintText: label,
+        hintStyle: TextStyle(color: isDarkMode ? Colors.white54 : Colors.black54),
+        filled: true,
+        fillColor: fillColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.black, width: 1),
         ),
-        enabled: !_isLoading,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.black, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.black, width: 1.2),
+        ),
       ),
+      enabled: !_isLoading,
     );
   }
 
-  Widget _buildButton(String text, VoidCallback onPressed) {
+  Widget _buildPrimaryButton(String text, VoidCallback onPressed, bool isDarkMode) {
     return ElevatedButton(
       onPressed: _isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.symmetric(vertical: 15),
         minimumSize: Size(double.infinity, 50),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        backgroundColor: isDarkMode ? Colors.deepPurpleAccent : Color(0xFFF0B8F6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        elevation: 0,
       ),
-      child:
-          _isLoading
-              ? SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-              : Text(text, style: TextStyle(fontSize: 16)),
+      child: _isLoading
+          ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+          : Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
     );
   }
 }
