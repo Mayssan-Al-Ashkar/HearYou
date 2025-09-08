@@ -10,6 +10,7 @@ import jwt
 from bson import ObjectId
 from events import events_bp
 from settings import settings_bp
+from weekly_reports import weekly_reports_bp
 
 
 def create_app():
@@ -231,6 +232,7 @@ def create_app():
     # Register blueprints
     app.register_blueprint(events_bp, url_prefix="/events")
     app.register_blueprint(settings_bp, url_prefix="/settings")
+    app.register_blueprint(weekly_reports_bp, url_prefix="/weekly_reports")
 
     return app
 
