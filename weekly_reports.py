@@ -48,6 +48,19 @@ def _serialize_report(doc: dict) -> dict:
 
 @weekly_reports_bp.route("/", methods=["GET"])  # GET /weekly_reports/
 def list_weekly_reports():
+    """List weekly reports
+    ---
+    tags: [Weekly Reports]
+    parameters:
+      - in: query
+        name: userId
+        type: string
+      - in: query
+        name: email
+        type: string
+    responses:
+      200: {description: List returned}
+    """
     db = current_app.config.get("DB")
     coll = db["weekly_reports"]
     user_id = request.args.get("userId", "").strip()

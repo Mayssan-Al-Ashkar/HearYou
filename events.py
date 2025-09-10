@@ -36,6 +36,13 @@ def _serialize_event(doc: dict) -> dict:
 
 @events_bp.route("/", methods=["GET"])  # GET /events/
 def list_events():
+    """List events
+    ---
+    tags: [Events]
+    responses:
+      200:
+        description: List of events
+    """
     db = current_app.config.get("DB")
     coll = db["events"]
     items = list(coll.find({}).sort("eventAt", -1))
@@ -44,6 +51,27 @@ def list_events():
 
 @events_bp.route("/", methods=["POST"])  # POST /events/
 def create_event():
+    """Create an event
+    ---
+    tags: [Events]
+    consumes:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        schema:
+          type: object
+          required: [title]
+          properties:
+            title: {type: string}
+            description: {type: string}
+            isImportant: {type: boolean}
+            eventAt: {type: string, format: date-time}
+            source: {type: string}
+    responses:
+      201:
+        description: Created
+    """
     db = current_app.config.get("DB")
     coll = db["events"]
     data = request.get_json(force=True, silent=True) or {}
@@ -125,6 +153,29 @@ def create_event():
 
 @events_bp.route("/<event_id>", methods=["PATCH"])  # PATCH /events/<id>
 def update_event(event_id: str):
+    """Update an event
+    ---
+    tags: [Events]
+    consumes:
+      - application/json
+    parameters:
+      - in: path
+        name: event_id
+        required: true
+        type: string
+      - in: body
+        name: body
+        schema:
+          type: object
+          properties:
+            title: {type: string}
+            description: {type: string}
+            isImportant: {type: boolean}
+    responses:
+      200: {description: Updated}
+      400: {description: Invalid id or payload}
+      404: {description: Not found}
+    """
     db = current_app.config.get("DB")
     coll = db["events"]
     try:

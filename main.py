@@ -181,6 +181,9 @@ import mediapipe as mp
 import numpy as np
 import time
 import math
+import os
+import requests
+from datetime import datetime, timezone
 
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
@@ -191,13 +194,30 @@ ANGLE_THRESHOLD = 15           # degrees change to count as movement
 ALARM_DURATION = 5             # seconds
 GRACE_PERIOD = 0.5             # seconds to ignore brief pauses
 
-video_path = r"C:\Users\Ahmad1\Downloads\istockphoto-2209315402-640_adpp_is.mp4"
+video_path = r"C:\Users\QSC20\Desktop\baby videos\baby3.mp4"
 cap = cv2.VideoCapture(video_path)
 
 prev_landmarks = None
 prev_angles = None
 movement_start_time = None
 last_movement_time = None
+posted_alarm = False  # ensure one event per continuous movement cycle
+
+API_BASE = os.getenv("API_BASE", "http://127.0.0.1:5000")
+
+def post_event_to_backend(title: str, description: str) -> None:
+    try:
+        now_iso = datetime.now(timezone.utc).isoformat()
+        payload = {
+            "title": title,
+            "description": description,
+            "isImportant": False,
+            "eventAt": now_iso,
+            "source": "pose_motion",
+        }
+        requests.post(f"{API_BASE}/events/", json=payload, timeout=3)
+    except Exception:
+        pass
 
 # function to compute angle between three points
 def calculate_angle(a, b, c):
@@ -285,14 +305,21 @@ with mp_holistic.Holistic(
             else:
                 if last_movement_time and current_time - last_movement_time > GRACE_PERIOD:
                     movement_start_time = None
-                    box_color = (0, 255, 0)  # green
+                    posted_alarm = False  # reset when movement ends
+                    box_color = (0, 255, 0)
                 else:
-                    box_color = (0, 0, 255)  # still red during grace period
+                    box_color = (0, 0, 255)
 
             # Alarm
             if movement_start_time and current_time - movement_start_time >= ALARM_DURATION:
                 cv2.putText(frame, "ALARM: Baby moving too long!", (50, 50),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                if not posted_alarm:
+                    post_event_to_backend(
+                        title="baby movement",
+                        description="Detected continuous baby movement for threshold duration",
+                    )
+                    posted_alarm = True
 
             cv2.rectangle(frame, (x_min - 10, y_min - 10),
                           (x_max + 10, y_max + 10), box_color, 2)
