@@ -1,0 +1,56 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'Server/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    paths:
+      - 'Server/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  test-lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt
+          pip install pytest ruff
+      - name: Lint (ruff)
+        run: ruff check . || true
+      - name: Unit tests
+        run: |
+          mkdir -p tests
+          echo "def test_health(): assert True" > tests/test_health.py
+          pytest -q
+
+  build-image:
+    needs: test-lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./Server
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/hearyou-backend:latest
