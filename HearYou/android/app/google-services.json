@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1072506645441",
+    "firebase_url": "https://hearyou-6f443-default-rtdb.firebaseio.com",
+    "project_id": "hearyou-6f443",
+    "storage_bucket": "hearyou-6f443.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1072506645441:android:db8ea52bc51505423c5d40",
+        "android_client_info": {
+          "package_name": "com.example.seniorapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1072506645441-ano2ml6fmh7o786ogbre37dfjdcdvf52.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.seniorapp",
+            "certificate_hash": "85a5aa482a45f4b93645a5e7f1d64e30fb47625f"
+          }
+        },
+        {
+          "client_id": "1072506645441-lb9p2pg878m0ggftt2ne3ejhd83vpnpq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKOIx9L0jGUNFw0gOxS7cT4_WvxhgkVd0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1072506645441-lb9p2pg878m0ggftt2ne3ejhd83vpnpq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1072506645441-molljnvsbt680dbqijcpk0tmi1jsu20q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.seniorapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
