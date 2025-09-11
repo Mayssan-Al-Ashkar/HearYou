@@ -1,0 +1,70 @@
+name: Flutter CI
+
+on:
+  push:
+    paths:
+      - 'HearYou/**'
+      - '.github/workflows/flutter-ci.yml'
+  pull_request:
+    paths:
+      - 'HearYou/**'
+      - '.github/workflows/flutter-ci.yml'
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: HearYou
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java (for Android build tools)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: HearYou/coverage/lcov.info
+
+      # Optional smoke build for Android. Marked as non-blocking to keep CI green
+      # even if Android build tools download fails or takes too long.
+      - name: Build Android debug APK (optional)
+        run: flutter build apk --debug
+        continue-on-error: true
+
+      - name: Upload debug APK artifact (optional)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: HearYou/build/app/outputs/flutter-apk/app-debug.apk
+
+
