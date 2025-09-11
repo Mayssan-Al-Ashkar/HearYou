@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-lcov
-          path: HearYou/coverage/lcov.info
+          path: coverage/lcov.info
 
       # Optional smoke build for Android. Marked as non-blocking to keep CI green
       # even if Android build tools download fails or takes too long.
@@ -61,11 +61,12 @@ jobs:
         continue-on-error: true
 
       - name: Upload debug APK artifact (optional)
-        if: ${{ always() }}
+        if: ${{ always() && hashFiles('HearYou/build/app/outputs/flutter-apk/app-debug.apk') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: HearYou/build/app/outputs/flutter-apk/app-debug.apk
+        continue-on-error: true
 
 
 # trigger 
