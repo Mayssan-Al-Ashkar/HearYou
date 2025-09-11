@@ -80,8 +80,6 @@ def event_title_to_key(title: str) -> str:
         "phone calling": "phone_call",
         "door knocking": "door_knocking",
         "door knocking ": "door_knocking",
-        "doorbell": "door_knocking",
-        "door bell": "door_knocking",
     }
     if t in mapping:
         return mapping[t]
@@ -134,10 +132,6 @@ def handle_event_doc(doc: dict, settings: SettingsCache, bracelet: BraceletSeria
     title = doc.get("title", "")
     color = settings.get_color_for_event(title)
     vibrate = settings.get_vibrate_intensity()
-    try:
-        print(f"[bridge] Event received → title='{title}' → color='{color}' vib={vibrate}")
-    except Exception:
-        pass
     bracelet.send_command(color=color, vibrate=vibrate)
     if vibrate > 0:
         # stop vibration after configured ms but keep color
@@ -158,14 +152,12 @@ def watch_events(db, settings: SettingsCache, bracelet: BraceletSerial, stop_eve
                 full = change.get("fullDocument", {})
                 handle_event_doc(full, settings, bracelet)
     except PyMongoError:
-        # Fallback: poll by ObjectId (most reliable across varied createdAt types)
-        from bson import ObjectId
-        last_id = ObjectId.from_datetime(datetime.now(timezone.utc))
+        # Fallback: poll by createdAt increasing
+        last_ts = datetime.now(timezone.utc)
         while not stop_event.is_set():
             try:
-                cursor = col.find({"_id": {"$gt": last_id}}).sort("_id", 1)
-                for d in cursor:
-                    last_id = d.get("_id", last_id)
+                for d in col.find({"createdAt": {"$gt": last_ts}}).sort("createdAt", 1):
+                    last_ts = d.get("createdAt", last_ts)
                     handle_event_doc(d, settings, bracelet)
             except Exception:
                 pass

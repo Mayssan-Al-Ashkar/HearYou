@@ -183,7 +183,6 @@ import time
 import math
 import os
 import requests
-from pymongo import MongoClient
 from datetime import datetime, timezone
 
 mp_holistic = mp.solutions.holistic
@@ -195,7 +194,7 @@ ANGLE_THRESHOLD = 15           # degrees change to count as movement
 ALARM_DURATION = 5             # seconds
 GRACE_PERIOD = 0.5             # seconds to ignore brief pauses
 
-video_path = r"C:\Users\QSC20\HearYou\HearYou\Server\istockphoto-981037294-640_adpp_is.mp4"
+video_path = r"C:\Users\QSC20\Desktop\baby videos\baby3.mp4"
 cap = cv2.VideoCapture(video_path)
 
 prev_landmarks = None
@@ -205,50 +204,20 @@ last_movement_time = None
 posted_alarm = False  # ensure one event per continuous movement cycle
 
 API_BASE = os.getenv("API_BASE", "http://127.0.0.1:5000")
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-MONGO_DB = os.getenv("MONGO_DB", os.getenv("DB_NAME", "hearyou"))
 
-def post_event_to_backend(title: str, description: str) -> bool:
-    """Try to save the event via API; if API is unreachable, save directly to Mongo.
-
-    Returns True if saved somewhere, False otherwise.
-    """
-    now_iso = datetime.now(timezone.utc).isoformat()
-    payload = {
-        "title": title,
-        "description": description,
-        "isImportant": False,
-        "eventAt": now_iso,
-        "source": "pose_motion",
-    }
-    # 1) Try API first
+def post_event_to_backend(title: str, description: str) -> None:
     try:
-        resp = requests.post(f"{API_BASE}/events/", json=payload, timeout=4)
-        if resp.status_code in (200, 201):
-            print("[main] event saved for tracking (API):", title)
-            return True
-        else:
-            print("[main] API save failed:", resp.status_code, resp.text)
-    except Exception as exc:
-        print("[main] API not reachable, falling back to Mongo:", exc)
-
-    # 2) Fallback to Mongo
-    try:
-        client = MongoClient(MONGO_URI)
-        db = client[MONGO_DB]
-        db["events"].insert_one({
+        now_iso = datetime.now(timezone.utc).isoformat()
+        payload = {
             "title": title,
             "description": description,
             "isImportant": False,
-            "eventAt": datetime.now(timezone.utc),
-            "createdAt": datetime.now(timezone.utc),
+            "eventAt": now_iso,
             "source": "pose_motion",
-        })
-        print("[main] event saved for tracking (Mongo):", title, "in DB:", MONGO_DB)
-        return True
-    except Exception as exc:
-        print("[main] Mongo fallback failed:", exc)
-        return False
+        }
+        requests.post(f"{API_BASE}/events/", json=payload, timeout=3)
+    except Exception:
+        pass
 
 # function to compute angle between three points
 def calculate_angle(a, b, c):
@@ -346,12 +315,10 @@ with mp_holistic.Holistic(
                 cv2.putText(frame, "ALARM: Baby moving too long!", (50, 50),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 if not posted_alarm:
-                    saved = post_event_to_backend(
+                    post_event_to_backend(
                         title="baby movement",
                         description="Detected continuous baby movement for threshold duration",
                     )
-                    if saved:
-                        print("[main] event saved for tracking")
                     posted_alarm = True
 
             cv2.rectangle(frame, (x_min - 10, y_min - 10),
