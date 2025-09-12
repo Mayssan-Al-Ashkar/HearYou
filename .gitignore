@@ -26,4 +26,13 @@ uploads/
 # /path/to/largefile.ext
 
 # VSCode settings
+.vscode/venv/
+venv_vision/
+venv_audio/
+venv_api/
+.venv/
+__pycache__/
+*.pyc
+Server/.tfhub_cache/
+venv/
 .vscode/

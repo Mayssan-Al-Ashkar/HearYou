@@ -184,6 +184,7 @@ import math
 import os
 import requests
 from datetime import datetime, timezone
+from pymongo import MongoClient
 
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
@@ -193,19 +194,33 @@ MOVEMENT_THRESHOLD = 10        # pixels per landmark (distance)
 ANGLE_THRESHOLD = 15           # degrees change to count as movement
 ALARM_DURATION = 5             # seconds
 GRACE_PERIOD = 0.5             # seconds to ignore brief pauses
+COOLDOWN_WINDOW_SECONDS = 300.0 # 5 minutes window to dedupe events
 
-video_path = r"C:\Users\QSC20\Desktop\baby videos\baby3.mp4"
+video_path = r"C:\Users\QSC20\HearYou\HearYou\Server\istockphoto-981037294-640_adpp_is.mp4"
 cap = cv2.VideoCapture(video_path)
 
 prev_landmarks = None
 prev_angles = None
 movement_start_time = None
 last_movement_time = None
-posted_alarm = False  # ensure one event per continuous movement cycle
+last_published_ts = 0.0  # epoch seconds of last saved event
 
 API_BASE = os.getenv("API_BASE", "http://127.0.0.1:5000")
 
-def post_event_to_backend(title: str, description: str) -> None:
+# MongoDB configuration (defaults to the requested DB name: HearYou)
+MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+DB_NAME = os.getenv("DB_NAME", "HearYou")
+
+# Initialize Mongo client/collection early; if it fails, we fallback to API only
+try:
+    _mongo_client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=2000)
+    _db = _mongo_client[DB_NAME]
+    _events_coll = _db["events"]
+except Exception:
+    _mongo_client = None
+    _events_coll = None
+
+def post_event_to_backend(title: str, description: str) -> bool:
     try:
         now_iso = datetime.now(timezone.utc).isoformat()
         payload = {
@@ -215,8 +230,28 @@ def post_event_to_backend(title: str, description: str) -> None:
             "eventAt": now_iso,
             "source": "pose_motion",
         }
-        requests.post(f"{API_BASE}/events/", json=payload, timeout=3)
+        resp = requests.post(f"{API_BASE}/events/", json=payload, timeout=3)
+        return resp.status_code in (200, 201)
     except Exception:
+        return False
+
+
+def save_event_to_mongo(title: str, description: str) -> None:
+    if _events_coll is None:
+        return
+    try:
+        now_dt = datetime.now(timezone.utc)
+        doc = {
+            "title": title,
+            "description": description,
+            "isImportant": False,
+            "eventAt": now_dt,
+            "createdAt": now_dt,
+            "source": "pose_motion",
+        }
+        _events_coll.insert_one(doc)
+    except Exception:
+        # Silent fallback; this script is primarily for local detection
         pass
 
 # function to compute angle between three points
@@ -305,7 +340,6 @@ with mp_holistic.Holistic(
             else:
                 if last_movement_time and current_time - last_movement_time > GRACE_PERIOD:
                     movement_start_time = None
-                    posted_alarm = False  # reset when movement ends
                     box_color = (0, 255, 0)
                 else:
                     box_color = (0, 0, 255)
@@ -314,12 +348,18 @@ with mp_holistic.Holistic(
             if movement_start_time and current_time - movement_start_time >= ALARM_DURATION:
                 cv2.putText(frame, "ALARM: Baby moving too long!", (50, 50),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                if not posted_alarm:
-                    post_event_to_backend(
+                # Publish at most once every COOLDOWN_WINDOW_SECONDS, even if multiple movements occur
+                if current_time - last_published_ts >= COOLDOWN_WINDOW_SECONDS:
+                    published = post_event_to_backend(
                         title="baby movement",
                         description="Detected continuous baby movement for threshold duration",
                     )
-                    posted_alarm = True
+                    if not published:
+                        save_event_to_mongo(
+                            title="baby movement",
+                            description="Detected continuous baby movement for threshold duration",
+                        )
+                    last_published_ts = current_time
 
             cv2.rectangle(frame, (x_min - 10, y_min - 10),
                           (x_max + 10, y_max + 10), box_color, 2)
