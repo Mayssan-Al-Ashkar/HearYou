@@ -2,10 +2,12 @@ name: Flutter CI
 
 on:
   push:
+  branches: [global]
     paths:
       - 'HearYou/**'
       - '.github/workflows/flutter-ci.yml'
   pull_request:
+  branches: [global]
     paths:
       - 'HearYou/**'
       - '.github/workflows/flutter-ci.yml'
