@@ -417,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Padding(padding: const EdgeInsets.all(50.0)),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 1),
               child: SizedBox(
                 height: 210,
                 width: double.infinity,

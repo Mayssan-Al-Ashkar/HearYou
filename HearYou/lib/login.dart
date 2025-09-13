@@ -311,13 +311,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(width: 10),
                             Text(
                               "Continue with Google",
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(color: Colors.black),
                             ),
                           ],
                         ),
-                        color: isDarkMode
-                            ? Colors.deepPurpleAccent
-                            : const Color(0xFFF0B8F6),
+                        color: Colors.white,
+                        borderColor: const Color(0xFFF0B8F6),
                         onPressed: () async {
                           try {
                             await GoogleSignIn().signOut();
@@ -427,15 +426,15 @@ class InputField extends StatelessWidget {
             fillColor: isDarkMode ? Colors.black45 : Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.black, width: 1),
+              borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.grey.shade300, width: 1),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.black, width: 1),
+              borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.grey.shade300, width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.black, width: 1.2),
+              borderSide: BorderSide(color: isDarkMode ? Colors.white : Colors.grey.shade300, width: 1.2),
             ),
           ),
         ),
@@ -448,11 +447,13 @@ class SocialButton extends StatelessWidget {
   final Widget icon;
   final Color color;
   final VoidCallback onPressed;
+  final Color? borderColor;
 
   const SocialButton({
     required this.icon,
     required this.color,
     required this.onPressed,
+    this.borderColor,
   });
 
   @override
@@ -463,7 +464,7 @@ class SocialButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: borderColor ?? Colors.grey.shade300),
       ),
       child: Material(
         color: Colors.transparent,

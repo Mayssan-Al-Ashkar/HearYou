@@ -59,15 +59,15 @@ class _HelpState extends State<Help> {
       hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.black54),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1),
+        borderSide: BorderSide(color: isDark ? Colors.white : Colors.grey.shade300, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1),
+        borderSide: BorderSide(color: isDark ? Colors.white : Colors.grey.shade300, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1.2),
+        borderSide: BorderSide(color: isDark ? Colors.white : Colors.grey.shade300, width: 1.2),
       ),
       prefixIconColor: isDark ? Colors.white : null,
     );
@@ -143,7 +143,7 @@ class _HelpState extends State<Help> {
         decoration: BoxDecoration(
           color: isDark ? Colors.black45 : Colors.white,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: isDark ? Colors.white : Colors.black, width: 1),
+          border: Border.all(color: isDark ? Colors.white : Colors.grey.shade300, width: 1),
         ),
         child: Text(
           _nameController.text.isNotEmpty ? _nameController.text : 'N/A',
@@ -165,7 +165,7 @@ class _HelpState extends State<Help> {
         decoration: BoxDecoration(
           color: isDark ? Colors.black45 : Colors.white,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: isDark ? Colors.white : Colors.black, width: 1),
+          border: Border.all(color: isDark ? Colors.white : Colors.grey.shade300, width: 1),
         ),
         child: Text(
           _emailController.text.isNotEmpty ? _emailController.text : 'N/A',
@@ -195,6 +195,7 @@ class _HelpState extends State<Help> {
                   value: "General information / Contact",
                   groupValue: _selectedSubject,
                   activeColor: isDark ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
+                  contentPadding: EdgeInsets.zero,
                   onChanged: (value) {
                     setState(() {
                       _selectedSubject = value!;
@@ -208,6 +209,7 @@ class _HelpState extends State<Help> {
                   value: "Suggest a feature",
                   groupValue: _selectedSubject,
                   activeColor: isDark ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
+                  contentPadding: EdgeInsets.zero,
                   onChanged: (value) {
                     setState(() {
                       _selectedSubject = value!;
@@ -221,6 +223,7 @@ class _HelpState extends State<Help> {
                   value: "Report a Problem",
                   groupValue: _selectedSubject,
                   activeColor: isDark ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
+                  contentPadding: EdgeInsets.zero,
                   onChanged: (value) {
                     setState(() {
                       _selectedSubject = value!;

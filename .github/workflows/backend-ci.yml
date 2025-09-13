@@ -44,15 +44,17 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: ./Server
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/hearyou-backend:latest
+          tags: ghcr.io/${{ github.repository_owner,, }}/hearyou-backend:latest

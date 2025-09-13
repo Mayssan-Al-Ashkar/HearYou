@@ -261,34 +261,7 @@ class _AlertsPageState extends State<AlertsPage> {
                             ],
                           );
                         }),
-                        SizedBox(height: 20),
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: _saveSettingsToMongo,
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 80,
-                                vertical: 15,
-                              ),
-                              backgroundColor: isDarkMode
-                                  ? Colors.deepPurpleAccent
-                                  : Color(0xFFF0B8F6),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              "Save Colors",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         SwitchListTile(
                           title: Text(
                             "Enable Vibration",
@@ -307,6 +280,33 @@ class _AlertsPageState extends State<AlertsPage> {
                           activeColor: isDarkMode
                               ? Colors.deepPurpleAccent
                               : Color.fromARGB(255, 229, 172, 240),
+                        ),
+                        SizedBox(height: 32),
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: _saveSettingsToMongo,
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 80,
+                                vertical: 15,
+                              ),
+                              backgroundColor: isDarkMode
+                                  ? Colors.deepPurpleAccent
+                                  : Color(0xFFF0B8F6),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              "Save Changes",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),

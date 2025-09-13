@@ -194,7 +194,7 @@ class _EventsPageState extends State<EventsPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              height: 48,
+              height: 44,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 gradient: LinearGradient(
@@ -211,13 +211,12 @@ class _EventsPageState extends State<EventsPage> {
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildFilterChip(context, 'All', FilterType.all, isDarkMode),
-                  _buildFilterChip(context, 'Today', FilterType.today, isDarkMode),
-                  _buildFilterChip(context, 'Yesterday', FilterType.yesterday, isDarkMode),
-                  _buildFilterChip(context, 'Before', FilterType.before, isDarkMode),
-                  _buildFilterChip(context, 'Favorite', FilterType.favorite, isDarkMode),
+                  Expanded(child: Center(child: _buildFilterChip(context, 'All', FilterType.all, isDarkMode))),
+                  Expanded(child: Center(child: _buildFilterChip(context, 'Today', FilterType.today, isDarkMode))),
+                  Expanded(child: Center(child: _buildFilterChip(context, 'Yesterday', FilterType.yesterday, isDarkMode))),
+                  Expanded(child: Center(child: _buildFilterChip(context, 'Before', FilterType.before, isDarkMode))),
+                  Expanded(child: Center(child: _buildFilterChip(context, 'Favorite', FilterType.favorite, isDarkMode))),
                 ],
               ),
             ),
@@ -260,6 +259,9 @@ class _EventsPageState extends State<EventsPage> {
                               case 'phone call':
                                 eventKey = 'phone_call';
                                 break;
+                              case 'baby movement':
+                                eventKey = 'baby_movement';
+                                break;
                               case 'other sound':
                                 eventKey = 'additional_event';
                                 break;
@@ -301,28 +303,34 @@ class _EventsPageState extends State<EventsPage> {
 
   Widget _buildFilterChip(BuildContext context, String label, FilterType type, bool isDarkMode) {
     final bool isActive = _selectedFilter == type;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _selectedFilter = type),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            color: isActive
-                ? (isDarkMode ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6))
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: isActive
-                    ? Colors.white
-                    : (isDarkMode ? Colors.white70 : Colors.black87),
-              ),
+    return GestureDetector(
+      onTap: () => setState(() => _selectedFilter = type),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive
+              ? (isDarkMode ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6))
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        constraints: const BoxConstraints(minHeight: 32),
+        alignment: Alignment.center,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isActive
+                  ? Colors.white
+                  : (isDarkMode ? Colors.white70 : Colors.black87),
             ),
+            maxLines: 1,
+            softWrap: false,
+            textAlign: TextAlign.center,
           ),
         ),
       ),
@@ -423,14 +431,15 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.fromLTRB(8, 0, 8, 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 4,
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 5,
+            height: 6,
             width: double.infinity,
             decoration: BoxDecoration(
               color: lineColor,
@@ -440,7 +449,7 @@ class EventCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -468,15 +477,13 @@ class EventCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Text(event.description, style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
                 Text(
                   'Date: ${DateFormat("MM/dd/yyyy").format(event.date)}',
                   style: const TextStyle(color: Colors.grey),
                 ),
                 Text(
-                  'Time: ${event.time}',
+                  'Time: ${DateFormat("HH:mm").format(event.fullDateTime.toLocal())}',
                   style: const TextStyle(color: Colors.grey),
                 ),
               ],

@@ -181,16 +181,17 @@ class SOSPage extends StatelessWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                const SizedBox(height: 19),
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.only(left: 12, right: 12, top: 0, bottom: 12),
                   child: Text(
-                    "• In case of emergency, press 'Call Now' and a call will be made to your emergency number.",
+                    "In case of emergency, press 'Call Now' and a call will be made to your emergency number.",
                     style: TextStyle(
                       color: iconColor,
                       fontSize: 14,
@@ -214,7 +215,7 @@ class SOSPage extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   child: Text(
-                    "• Press 'Send SMS Now' so that your location will reach him as message.",
+                    "Press 'Send SMS Now' so that your location will reach him as message.",
                     style: TextStyle(
                       color: iconColor,
                       fontSize: 14,
