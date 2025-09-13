@@ -57,4 +57,6 @@ jobs:
         with:
           context: ./Server
           push: true
-          tags: ghcr.io/${{ github.repository_owner,, }}/hearyou-backend:latest
+          tags: |
+            ghcr.io/${{ toLower(github.repository_owner) }}/hearyou-backend:latest
+            ghcr.io/${{ toLower(github.repository_owner) }}/hearyou-backend:${{ github.sha }}

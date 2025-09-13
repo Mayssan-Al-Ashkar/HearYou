@@ -1,4 +1,4 @@
-## HearYou Bracelet: Arduino + MongoDB bridgee
+## HearYou Bracelet: Arduino + MongoDB bridge
 
 This folder contains two parts:
 
