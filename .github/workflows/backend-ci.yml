@@ -52,11 +52,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase owner
+        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: ./Server
           push: true
           tags: |
-            ghcr.io/${{ toLower(github.repository_owner) }}/hearyou-backend:latest
-            ghcr.io/${{ toLower(github.repository_owner) }}/hearyou-backend:${{ github.sha }}
+            ghcr.io/${{ env.OWNER_LC }}/hearyou-backend:latest
+            ghcr.io/${{ env.OWNER_LC }}/hearyou-backend:${{ github.sha }}
