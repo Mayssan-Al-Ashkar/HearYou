@@ -225,10 +225,8 @@ def post_event_to_backend(title: str, description: str) -> bool:
         now_iso = datetime.now(timezone.utc).isoformat()
         payload = {
             "title": title,
-            "description": description,
             "isImportant": False,
             "eventAt": now_iso,
-            "source": "pose_motion",
         }
         resp = requests.post(f"{API_BASE}/events/", json=payload, timeout=3)
         return resp.status_code in (200, 201)
@@ -243,11 +241,9 @@ def save_event_to_mongo(title: str, description: str) -> None:
         now_dt = datetime.now(timezone.utc)
         doc = {
             "title": title,
-            "description": description,
             "isImportant": False,
             "eventAt": now_dt,
             "createdAt": now_dt,
-            "source": "pose_motion",
         }
         _events_coll.insert_one(doc)
     except Exception:

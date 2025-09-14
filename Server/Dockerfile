@@ -14,7 +14,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy only API files (keeps image small)
-COPY api_server.py events.py settings.py weekly_reports.py ./
+COPY api_server.py events.py settings.py weekly_reports.py agent.py ./
 
 EXPOSE 5000
 CMD ["gunicorn", "api_server:create_app()", "-b", "0.0.0.0:5000", "-w", "2", "--threads", "4"]

@@ -83,7 +83,7 @@ What it does:
     "isImportant": false,
     "eventAt": "2025-01-01T00:00:00Z",
     "createdAt": "2025-08-31T11:53:50.280Z",
-    "source": "ml"
+    // source removed as of 2025-09
   }
   ```
 

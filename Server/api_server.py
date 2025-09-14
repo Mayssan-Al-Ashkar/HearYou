@@ -9,6 +9,7 @@ from bson import ObjectId
 from events import events_bp
 from settings import settings_bp
 from weekly_reports import weekly_reports_bp
+from agent import agent_bp
 from flasgger import Swagger
 
 
@@ -99,6 +100,7 @@ def create_app():
     app.register_blueprint(events_bp, url_prefix="/events")
     app.register_blueprint(settings_bp, url_prefix="/settings")
     app.register_blueprint(weekly_reports_bp, url_prefix="/weekly_reports")
+    app.register_blueprint(agent_bp, url_prefix="/agent")
 
     return app
 

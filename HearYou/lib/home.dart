@@ -72,6 +72,17 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentImageIndex = 0;
   Timer? sliderTimer;
 
+  final TextEditingController _agentController = TextEditingController();
+  bool _agentLoading = false;
+  String? _agentAnswer;
+
+  final List<String> _agentSuggestions = [
+    'turn off vibration',
+    'set door knocking color to blue',
+    'set quiet hours from 21:00 to 07:00',
+    'prioritize baby crying',
+  ];
+
   static const String apiBase = String.fromEnvironment(
     'API_BASE',
     defaultValue: 'http://10.0.2.2:5000',
@@ -92,6 +103,156 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Widget _buildAssistantPanel(bool isDarkMode) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: FractionallySizedBox(
+        heightFactor: 0.6,
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isDarkMode
+                  ? [Color(0xFF1F1A24), Color(0xFF2A2234)]
+                  : [Color(0xFFF7F3FF), Color(0xFFEDE6FF)],
+            ),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            border: Border.all(
+              color: isDarkMode
+                  ? Colors.deepPurpleAccent.withOpacity(0.25)
+                  : Color(0xFFE5D6F8),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: isDarkMode
+                    ? Colors.black.withOpacity(0.6)
+                    : Color(0xFFB388FF).withOpacity(0.12),
+                blurRadius: 24,
+                offset: Offset(0, -8),
+              ),
+            ],
+          ),
+          padding: EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.deepPurpleAccent,
+                          Color(0xFF7E57C2),
+                        ],
+                      ),
+                    ),
+                    child: Icon(Icons.auto_awesome, color: Colors.white),
+                  ),
+                  SizedBox(width: 12),
+                  Text(
+                    'Assistant',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  Spacer(),
+                  if (_agentLoading)
+                    SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                ],
+              ),
+              SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _agentController,
+                      textInputAction: TextInputAction.send,
+                      onSubmitted: (_) => _sendAgentCommand(),
+                      decoration: InputDecoration(
+                        hintText: 'Ask to change settings... ',
+                        filled: true,
+                        fillColor: isDarkMode ? Color(0xFF2B2234) : Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  ElevatedButton.icon(
+                    onPressed: _agentLoading ? null : () => _sendAgentCommand(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurpleAccent,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: Icon(Icons.send),
+                    label: Text('Send'),
+                  ),
+                ],
+              ),
+              if (_agentAnswer != null && _agentAnswer!.isNotEmpty) ...[
+                SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? Color(0xFF2B2234) : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isDarkMode
+                          ? Colors.deepPurpleAccent.withOpacity(0.25)
+                          : Color(0xFFE5D6F8),
+                    ),
+                  ),
+                  padding: EdgeInsets.all(12),
+                  child: Text(
+                    _agentAnswer!,
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white70 : Colors.black87,
+                    ),
+                  ),
+                ),
+              ],
+              SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _agentSuggestions.map((s) {
+                  return ActionChip(
+                    label: Text(s),
+                    onPressed: _agentLoading ? null : () => _sendAgentCommand(s),
+                    backgroundColor: isDarkMode ? Color(0xFF2B2234) : Colors.white,
+                    shape: StadiumBorder(side: BorderSide(color: isDarkMode ? Colors.deepPurpleAccent.withOpacity(0.25) : Color(0xFFE5D6F8))),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _startImageSlider() {
     sliderTimer = Timer.periodic(Duration(seconds: 4), (timer) {
       setState(() {
@@ -103,6 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     sliderTimer?.cancel();
+    _agentController.dispose();
     super.dispose();
   }
 
@@ -140,6 +302,40 @@ class _HomeScreenState extends State<HomeScreen> {
         }),
       );
     } catch (_) {}
+  }
+
+  Future<void> _sendAgentCommand([String? textOverride]) async {
+    final text = (textOverride ?? _agentController.text).trim();
+    if (text.isEmpty) return;
+    setState(() {
+      _agentLoading = true;
+      _agentAnswer = null;
+    });
+    try {
+      final resp = await http.post(
+        Uri.parse('$apiBase/agent/command'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"question": text}),
+      );
+      if (resp.statusCode >= 200 && resp.statusCode < 300) {
+        final data = jsonDecode(resp.body) as Map<String, dynamic>;
+        setState(() {
+          _agentAnswer = (data['answer'] ?? '').toString();
+        });
+      } else {
+        setState(() {
+          _agentAnswer = 'Request failed (${resp.statusCode})';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _agentAnswer = 'Network error';
+      });
+    } finally {
+      setState(() {
+        _agentLoading = false;
+      });
+    }
   }
 
   Future<void> _updateRealtimeDatabase(String message) async {
@@ -409,38 +605,41 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-      body: Container(
-        decoration: BoxDecoration(
-          color: isDarkMode ? Colors.black : Colors.white,
-        ),
-        child: Column(
-          children: [
-            Padding(padding: const EdgeInsets.all(50.0)),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1),
-              child: SizedBox(
-                height: 210,
-                width: double.infinity,
-                child: Card(
-                  key: sliderKey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                  color: isDarkMode ? Colors.grey[850] : Colors.white,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      sliderImages[currentImageIndex],
-                      fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: isDarkMode ? Colors.black : Colors.white,
+            ),
+            child: Column(
+              children: [
+                Padding(padding: const EdgeInsets.all(50.0)),
+                SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 1),
+                  child: SizedBox(
+                    height: 210,
+                    width: double.infinity,
+                    child: Card(
+                      key: sliderKey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                      color: isDarkMode ? Colors.grey[850] : Colors.white,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          sliderImages[currentImageIndex],
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: GridView.builder(
+                SizedBox(height: 16),
+                Expanded(
+                  child: GridView.builder(
                 padding: EdgeInsets.all(16),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -562,9 +761,38 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            right: 16,
+            bottom: 24,
+            child: SizedBox(
+              width: 56,
+              height: 56,
+              child: Material(
+                color: Colors.deepPurpleAccent,
+                borderRadius: BorderRadius.circular(12),
+                elevation: 6,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (ctx) => _buildAssistantPanel(isDarkMode),
+                    );
+                  },
+                  child: Center(
+                    child: Icon(Icons.auto_awesome, color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -67,7 +67,7 @@ def post_event(title: str, event_dt: float):
         iso_time = datetime.utcfromtimestamp(event_dt).isoformat()
         resp = requests.post(
             f"{API_BASE}/events/",
-            json={"title": title, "eventAt": iso_time, "source": "audio_ml"},
+            json={"title": title, "eventAt": iso_time},
             timeout=5,
         )
         if resp.status_code not in (200, 201):

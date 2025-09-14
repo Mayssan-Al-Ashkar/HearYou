@@ -27,6 +27,8 @@ def get_settings():
         "settings": {
             "colors": doc.get("colors", DEFAULT_COLORS),
             "vibration": bool(doc.get("vibration", False)),
+            "quietHours": doc.get("quietHours", {}),
+            "priorities": doc.get("priorities", {}),
         },
     })
 
@@ -54,13 +56,21 @@ def save_settings():
     data = request.get_json(force=True, silent=True) or {}
     colors = data.get("colors") or {}
     vibration = bool(data.get("vibration", False))
+    quiet_hours = data.get("quietHours") or None
+    priorities = data.get("priorities") or None
 
     if not isinstance(colors, dict):
         return jsonify({"ok": False, "message": "colors must be an object"}), 400
 
+    update_fields = {"colors": colors, "vibration": vibration}
+    if isinstance(quiet_hours, dict):
+        update_fields["quietHours"] = quiet_hours
+    if isinstance(priorities, dict):
+        update_fields["priorities"] = priorities
+
     db["settings"].update_one(
         {"_id": "global"},
-        {"$set": {"colors": colors, "vibration": vibration}},
+        {"$set": update_fields},
         upsert=True,
     )
     return jsonify({"ok": True})

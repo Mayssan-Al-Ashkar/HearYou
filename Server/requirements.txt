@@ -4,3 +4,5 @@ pymongo==4.8.0
 flasgger==0.9.7.1
 requests==2.32.3
 gunicorn==22.0.0
+rpds-py>=0.18
+jsonschema==4.17.3

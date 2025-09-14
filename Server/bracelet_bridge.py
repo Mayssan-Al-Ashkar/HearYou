@@ -91,6 +91,7 @@ class SettingsCache:
         self.col = db[SETTINGS_COLLECTION]
         self.colors: dict[str, str] = {}
         self.vibration: bool = False
+        self.quiet_hours: dict | None = None
         self.lock = threading.Lock()
         self.reload()
 
@@ -98,9 +99,11 @@ class SettingsCache:
         doc = self.col.find_one({"_id": "global"}) or {}
         colors = (doc.get("colors") or {})
         vibration = bool(doc.get("vibration", False))
+        quiet = doc.get("quietHours") if isinstance(doc.get("quietHours"), dict) else None
         with self.lock:
             self.colors = {str(k): str(v) for k, v in colors.items()}
             self.vibration = vibration
+            self.quiet_hours = quiet
 
     def get_color_for_event(self, title: str) -> str:
         key = event_title_to_key(title)
@@ -109,7 +112,33 @@ class SettingsCache:
 
     def get_vibrate_intensity(self) -> int:
         with self.lock:
+            # respect quiet hours
+            try:
+                if self._is_within_quiet_hours_locked():
+                    return 0
+            except Exception:
+                pass
             return 255 if self.vibration else 0
+
+    def _is_within_quiet_hours_locked(self) -> bool:
+        if not self.quiet_hours:
+            return False
+        try:
+            start = (self.quiet_hours.get("start") or "").strip()
+            end = (self.quiet_hours.get("end") or "").strip()
+            if not start or not end or len(start) != 5 or len(end) != 5:
+                return False
+            now = datetime.now().time()
+            sh, sm = int(start[:2]), int(start[3:])
+            eh, em = int(end[:2]), int(end[3:])
+            start_t = now.replace(hour=sh, minute=sm, second=0, microsecond=0)
+            end_t = now.replace(hour=eh, minute=em, second=0, microsecond=0)
+            if start_t <= end_t:
+                return start_t <= now <= end_t
+            else:
+                return now >= start_t or now <= end_t
+        except Exception:
+            return False
 
 
 def watch_settings_changes(settings: SettingsCache, stop_event: threading.Event):
@@ -170,10 +199,8 @@ def post_door_knocking_event():
         now_iso = datetime.now(timezone.utc).isoformat()
         payload = {
             "title": "door knocking",
-            "description": "bracelet button pressed",
             "isImportant": False,
             "eventAt": now_iso,
-            "source": "bracelet_button",
         }
         requests.post(f"{API_BASE}/events/", json=payload, timeout=3)
     except Exception:

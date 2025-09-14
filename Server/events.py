@@ -26,13 +26,48 @@ def _serialize_event(doc: dict) -> dict:
     return {
         "id": str(doc.get("_id")),
         "title": doc.get("title", ""),
-        "description": doc.get("description", ""),
+        # Do not expose description going forward; keep empty for UI compatibility
+        "description": "",
         "date": date_str,
         "time": time_str,
         "eventAt": event_at.isoformat(),
         "isImportant": bool(doc.get("isImportant", False)),
     }
 
+
+def _normalize_event_key(title: str) -> str:
+    t = (title or "").strip().lower()
+    mapping = {
+        "baby crying": "baby_crying",
+        "baby movement": "baby_movement",
+        "door knocking": "door_knocking",
+        "phone call": "phone_call",
+    }
+    if t in mapping:
+        return mapping[t]
+    return t.replace(" ", "_")
+
+
+def _is_within_quiet_hours(quiet: dict | None) -> bool:
+    if not isinstance(quiet, dict):
+        return False
+    start = (quiet.get("start") or "").strip()
+    end = (quiet.get("end") or "").strip()
+    try:
+        now = datetime.now().time()
+        if not start or not end or len(start) != 5 or len(end) != 5:
+            return False
+        sh, sm = int(start[:2]), int(start[3:])
+        eh, em = int(end[:2]), int(end[3:])
+        start_t = now.replace(hour=sh, minute=sm, second=0, microsecond=0)
+        end_t = now.replace(hour=eh, minute=em, second=0, microsecond=0)
+        # If window crosses midnight
+        if start_t <= end_t:
+            return start_t <= now <= end_t
+        else:
+            return now >= start_t or now <= end_t
+    except Exception:
+        return False
 
 @events_bp.route("/", methods=["GET"])  # GET /events/
 def list_events():
@@ -76,7 +111,8 @@ def create_event():
     coll = db["events"]
     data = request.get_json(force=True, silent=True) or {}
     title = (data.get("title") or "").strip()
-    description = (data.get("description") or "").strip()
+    # Ignore description/source in new events
+    description = ""
     is_important = bool(data.get("isImportant", False))
     event_at_iso = data.get("eventAt")
 
@@ -88,23 +124,38 @@ def create_event():
     except Exception:
         event_at = datetime.now(timezone.utc)
 
+    # Auto-prioritize if not explicitly set and a priority exists in settings
+    try:
+        settings_coll = db["settings"]
+        settings_doc = settings_coll.find_one({"_id": "global"}) or {}
+        if not data.get("isImportant"):
+            key = _normalize_event_key(title)
+            priorities = settings_doc.get("priorities") or {}
+            if isinstance(priorities, dict):
+                is_important = bool(priorities.get(key, False))
+    except Exception:
+        pass
+
     doc = {
         "title": title,
-        "description": description,
+        # intentionally omitting description
         "isImportant": is_important,
         "eventAt": event_at,
         "createdAt": datetime.now(timezone.utc),
-        "source": data.get("source", "ml"),
+        # intentionally omitting source
     }
     inserted = coll.insert_one(doc)
     created = coll.find_one({"_id": inserted.inserted_id})
 
-    # Send FCM push notification if configured
+    # Send FCM push notification if configured (skip during quiet hours)
     try:
         server_key = os.getenv("FCM_SERVER_KEY")
         if server_key:
             db = current_app.config.get("DB")
             users_coll = db["users"]
+            settings_doc = (db["settings"].find_one({"_id": "global"}) or {})
+            if _is_within_quiet_hours(settings_doc.get("quietHours")):
+                raise Exception("Within quiet hours; skipping FCM")
             # Collect unique tokens
             tokens = set()
             for user in users_coll.find({}, {"fcmTokens": 1}):
