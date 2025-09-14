@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'edit_info_page.dart';
 import 'help.dart';
-import 'logout.dart';
 import 'about_us.dart';
+import 'login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -399,6 +401,24 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Future<void> _logout() async {
+    try {
+      try { await GoogleSignIn().signOut(); } catch (_) {}
+      try { await FacebookAuth.instance.logOut(); } catch (_) {}
+      await FirebaseAuth.instance.signOut();
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to logout. Please try again.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -571,22 +591,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       Navigator.pushNamed(context, '/weeklyReport');
                     },
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Account',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  _buildSettingsCard(
-                    icon: Icons.logout,
-                    title: 'Log Out',
-                    isDarkMode: isDarkMode,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LogoutPage()),
-                      );
-                    },
-                  ),
+                  // Removed Account section; add Logout button under Help
                   SizedBox(height: 10),
                   Text(
                     'About',
@@ -627,6 +632,29 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       );
                     },
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _logout,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(250, 50),
+                        backgroundColor:
+                            isDarkMode ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'LOGOUT',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

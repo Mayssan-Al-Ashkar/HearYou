@@ -772,23 +772,51 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 56,
               height: 56,
               child: Material(
-                color: Colors.deepPurpleAccent,
+                color: isDarkMode ? Colors.deepPurpleAccent : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 elevation: 6,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (ctx) => _buildAssistantPanel(isDarkMode),
-                    );
-                  },
-                  child: Center(
-                    child: Icon(Icons.auto_awesome, color: Colors.white),
-                  ),
-                ),
+                child: isDarkMode
+                    ? InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (ctx) => _buildAssistantPanel(isDarkMode),
+                          );
+                        },
+                        child: Center(
+                          child: Icon(Icons.auto_awesome, color: Colors.white),
+                        ),
+                      )
+                    : Ink(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: const [
+                              Color(0xFFF0B8F6),
+                              Color(0xFFE0C4FF),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (ctx) => _buildAssistantPanel(isDarkMode),
+                            );
+                          },
+                          child: Center(
+                            child: Icon(Icons.auto_awesome, color: Colors.white),
+                          ),
+                        ),
+                      ),
               ),
             ),
           ),
