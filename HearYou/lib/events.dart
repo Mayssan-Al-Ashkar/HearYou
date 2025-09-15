@@ -152,7 +152,6 @@ class _EventsPageState extends State<EventsPage> {
         case FilterType.favorite:
           return event.isImportant;
         case FilterType.all:
-        default:
           return true;
       }
     }).toList();
@@ -347,12 +346,6 @@ class _EventsPageState extends State<EventsPage> {
         return Colors.yellow;
       case 'green':
         return Colors.green;
-      case 'orange':
-        return Colors.orange;
-      case 'purple':
-        return Colors.purple;
-      case 'pink':
-        return Colors.pink;
       default:
         return Colors.grey;
     }

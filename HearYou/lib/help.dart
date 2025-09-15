@@ -20,34 +20,30 @@ class _HelpState extends State<Help> {
 
   @override
   void initState() {
-    super.initState();    Future<void> setUserEmail() async {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        
-        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-        setState(() {
-          _emailController.text = user.email ?? '';
-          
-          _nameController.text = doc.data()?['name'] ?? user.displayName ?? '';
-        });
-      }
-    }   
-    setUserEmail();
+    super.initState();
+    _setUserEmail();
   }
 
   Future<void> _setUserEmail() async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    setState(() {
-      if (user.email != null) {
-        _emailController.text = user.email!;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        setState(() {
+          _emailController.text = user.email ?? '';
+          _nameController.text = doc.data()?['name'] ?? user.displayName ?? '';
+        });
+      } catch (_) {
+        setState(() {
+          _emailController.text = user.email ?? '';
+          _nameController.text = user.displayName ?? '';
+        });
       }
-      if (user.displayName != null) {
-        _nameController.text = user.displayName!;
-      }
-    });
+    }
   }
-}
 
 
   InputDecoration _inputDecoration(String label) {

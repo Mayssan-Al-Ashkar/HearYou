@@ -7,7 +7,6 @@ import 'events.dart';
 import 'sos.dart';
 import 'camera.dart';
 import 'settings.dart';
-import 'package:flutter/services.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:phone_state/phone_state.dart';
@@ -17,15 +16,7 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-const platform = MethodChannel('com.example.call/audio');
-
-void _startCallWithAudio() async {
-  try {
-    await platform.invokeMethod('startCall');
-  } on PlatformException catch (e) {
-    print("Failed to start call: '${e.message}'.");
-  }
-}
+ 
 
 class HomeScreen extends StatefulWidget {
   final bool showTutorialOnOpen;
