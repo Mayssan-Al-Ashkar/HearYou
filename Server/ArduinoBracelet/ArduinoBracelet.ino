@@ -1,70 +1,49 @@
-// Arduino sketch for HearYou bracelet
 // Pins
-// RGB LED (common cathode): R=9, G=10, B=11
-// Vibration motor via NPN transistor: PWM=6
-// Push button (active low with pullup): D2
-
 const int PIN_RED = 9;
 const int PIN_GREEN = 10;
 const int PIN_BLUE = 11;
 const int PIN_MOTOR = 6;
 const int PIN_BUTTON = 2;
-
 // Debounce
 unsigned long lastButtonChangeMs = 0;
-int lastButtonState = HIGH; // using INPUT_PULLUP
+int lastButtonState = HIGH;
 bool reportedDown = false;
-
-// Helpers
-void setRgb(uint8_t r, uint8_t g, uint8_t b) {
-  analogWrite(PIN_RED, r);
-  analogWrite(PIN_GREEN, g);
-  analogWrite(PIN_BLUE, b);
-}
-
-void setMotor(uint8_t intensity) {
-  analogWrite(PIN_MOTOR, intensity);
-}
-
-void clearAll() {
-  setRgb(0, 0, 0);
-  setMotor(0);
-}
-
-// Expect commands over Serial (9600 baud) in single-line JSON-like form:
-// CMD examples:
-//   {"color":"red","vibrate":1}
-//   {"color":"#RRGGBB","vibrate":0}
-//   {"off":1}
-// Color names supported: red, green, blue, yellow, cyan, magenta, white, off
-
+// Define Rgb BEFORE any functions that use it
 struct Rgb { uint8_t r; uint8_t g; uint8_t b; };
 
+// Set to true if your RGB LED is COMMON-ANODE (long leg to +5V).
+// Leave false for COMMON-CATHODE (long leg to GND).
+const bool COMMON_ANODE = false;
+static inline uint8_t driveLevel(uint8_t v) {
+  return COMMON_ANODE ? (uint8_t)(255 - v) : v;
+}
+
+void setRgb(uint8_t r, uint8_t g, uint8_t b) {
+  analogWrite(PIN_RED, driveLevel(r));
+  analogWrite(PIN_GREEN, driveLevel(g));
+  analogWrite(PIN_BLUE, driveLevel(b));
+}
+void setMotor(uint8_t intensity) { analogWrite(PIN_MOTOR, intensity); }
+void clearAll() { setRgb(0,0,0); setMotor(0); }
 Rgb parseColorName(const String &name) {
   String n = name; n.toLowerCase();
-  if (n == "red") return {255, 0, 0};
-  if (n == "green") return {0, 255, 0};
-  if (n == "blue") return {0, 0, 255};
-  if (n == "yellow") return {255, 255, 0};
-  if (n == "cyan") return {0, 255, 255};
-  if (n == "magenta") return {255, 0, 255};
-  if (n == "white") return {255, 255, 255};
-  if (n == "off") return {0, 0, 0};
-  return {0, 0, 0};
+  if (n == "red") return {255,0,0};
+  if (n == "green") return {0,255,0};
+  if (n == "blue") return {0,0,255};
+  if (n == "yellow") return {255,255,0};
+  if (n == "cyan") return {0,255,255};
+  if (n == "magenta") return {255,0,255};
+  if (n == "white") return {255,255,255};
+  if (n == "off") return {0,0,0};
+  return {0,0,0};
 }
-
 Rgb parseHexColor(const String &hex) {
-  // Expect #RRGGBB
   if (hex.length() == 7 && hex[0] == '#') {
-    long value = strtol(hex.substring(1).c_str(), NULL, 16);
-    uint8_t r = (value >> 16) & 0xFF;
-    uint8_t g = (value >> 8) & 0xFF;
-    uint8_t b = value & 0xFF;
-    return {r, g, b};
+    long v = strtol(hex.substring(1).c_str(), NULL, 16);
+    return {(uint8_t)((v>>16)&0xFF),(uint8_t)((v>>8)&0xFF),(uint8_t)(v&0xFF)};
   }
-  return {0, 0, 0};
+  return {0,0,0};
 }
-
 void applyCommand(const String &line) {
   String s = line;
   s.trim();
@@ -74,9 +53,8 @@ void applyCommand(const String &line) {
     Serial.println(F("ACK"));
     return;
   }
-
   // Find color value
-  Rgb rgb = {0,0,0};
+  Rgb rgb = {0, 0, 0};
   int colorIdx = s.indexOf("\"color\"");
   if (colorIdx >= 0) {
     int colon = s.indexOf(':', colorIdx);
@@ -88,7 +66,6 @@ void applyCommand(const String &line) {
       else rgb = parseColorName(colorVal);
     }
   }
-
   // Find vibrate value (0/1 or 0-255)
   uint8_t vib = 0;
   int vibIdx = s.indexOf("\"vibrate\"");
@@ -100,12 +77,10 @@ void applyCommand(const String &line) {
       vib = (uint8_t)val;
     }
   }
-
   setRgb(rgb.r, rgb.g, rgb.b);
   setMotor(vib);
   Serial.println(F("ACK"));
 }
-
 void setup() {
   pinMode(PIN_RED, OUTPUT);
   pinMode(PIN_GREEN, OUTPUT);
@@ -113,12 +88,10 @@ void setup() {
   pinMode(PIN_MOTOR, OUTPUT);
   pinMode(PIN_BUTTON, INPUT_PULLUP);
   clearAll();
-
   Serial.begin(9600);
   while (!Serial) { ; }
   Serial.println(F("READY"));
 }
-
 void loop() {
   // 1) Read serial lines
   static String line = "";
@@ -134,7 +107,6 @@ void loop() {
       if (line.length() > 200) line = ""; // safety
     }
   }
-
   // 2) Report button state (edge on press)
   int s = digitalRead(PIN_BUTTON);
   unsigned long now = millis();
@@ -153,5 +125,3 @@ void loop() {
     }
   }
 }
-
-

@@ -22,6 +22,12 @@ def _serialize_event(doc: dict) -> dict:
             event_at = datetime.fromisoformat(event_at)
         except Exception:
             event_at = datetime.now(timezone.utc)
+    # Ensure timezone-aware (Mongo returns naive datetimes by default)
+    try:
+        if event_at.tzinfo is None or event_at.tzinfo.utcoffset(event_at) is None:
+            event_at = event_at.replace(tzinfo=timezone.utc)
+    except Exception:
+        event_at = datetime.now(timezone.utc)
     date_str, time_str = _format_date_time(event_at.astimezone())
     return {
         "id": str(doc.get("_id")),

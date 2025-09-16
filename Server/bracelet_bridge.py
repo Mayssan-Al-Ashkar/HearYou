@@ -54,6 +54,11 @@ class BraceletSerial:
             if vibrate is not None:
                 payload["vibrate"] = int(max(0, min(255, vibrate)))
         line = json.dumps(payload)
+        # Debug print to observe what is sent to Arduino
+        try:
+            print(f"[BRACELET] SEND {line}")
+        except Exception:
+            pass
         with self.lock:
             self.ser.write((line + "\n").encode("utf-8"))
 
@@ -104,11 +109,22 @@ class SettingsCache:
             self.colors = {str(k): str(v) for k, v in colors.items()}
             self.vibration = vibration
             self.quiet_hours = quiet
+        try:
+            print(f"[SETTINGS] colors={self.colors or '{defaults}'} vibration={self.vibration}")
+        except Exception:
+            pass
 
     def get_color_for_event(self, title: str) -> str:
         key = event_title_to_key(title)
+        # Fallback defaults if not set in DB
+        defaults = {
+            "baby_crying": "blue",
+            "door_knocking": "green",
+            "phone_call": "red",
+            "baby_movement": "yellow",
+        }
         with self.lock:
-            return self.colors.get(key, "white")
+            return self.colors.get(key, defaults.get(key, "white"))
 
     def get_vibrate_intensity(self) -> int:
         with self.lock:
@@ -161,6 +177,10 @@ def handle_event_doc(doc: dict, settings: SettingsCache, bracelet: BraceletSeria
     title = doc.get("title", "")
     color = settings.get_color_for_event(title)
     vibrate = settings.get_vibrate_intensity()
+    try:
+        print(f"[EVENT] '{title}' -> color={color} vibrate={vibrate}")
+    except Exception:
+        pass
     bracelet.send_command(color=color, vibrate=vibrate)
     if vibrate > 0:
         # stop vibration after configured ms but keep color
