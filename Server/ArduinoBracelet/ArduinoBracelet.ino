@@ -10,18 +10,10 @@ int lastButtonState = HIGH;
 bool reportedDown = false;
 // Define Rgb BEFORE any functions that use it
 struct Rgb { uint8_t r; uint8_t g; uint8_t b; };
-
-// Set to true if your RGB LED is COMMON-ANODE (long leg to +5V).
-// Leave false for COMMON-CATHODE (long leg to GND).
-const bool COMMON_ANODE = false;
-static inline uint8_t driveLevel(uint8_t v) {
-  return COMMON_ANODE ? (uint8_t)(255 - v) : v;
-}
-
 void setRgb(uint8_t r, uint8_t g, uint8_t b) {
-  analogWrite(PIN_RED, driveLevel(r));
-  analogWrite(PIN_GREEN, driveLevel(g));
-  analogWrite(PIN_BLUE, driveLevel(b));
+  analogWrite(PIN_RED, r);
+  analogWrite(PIN_GREEN, g);
+  analogWrite(PIN_BLUE, b);
 }
 void setMotor(uint8_t intensity) { analogWrite(PIN_MOTOR, intensity); }
 void clearAll() { setRgb(0,0,0); setMotor(0); }
