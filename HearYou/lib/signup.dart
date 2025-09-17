@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
+import 'view/signup_view.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -125,155 +126,22 @@ void _showTermsDialog() {
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    return Scaffold(
-      body: Container(
-        decoration:
-            isDarkMode
-                ? BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.black, Colors.grey[900]!, Colors.black87],
-                  ),
-                )
-                : BoxDecoration(
-                  color: Colors.white,
-                ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Sign Up",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 30),
-                  InputField(
-                    label: "Full Name",
-                    hint: "Enter your full name",
-                    icon: Icons.person_outline,
-                    isDarkMode: isDarkMode,
-                    controller: _nameController,
-                  ),
-                  SizedBox(height: 20),
-                  InputField(
-                    label: "Email",
-                    hint: "Enter your email",
-                    icon: Icons.email_outlined,
-                    isDarkMode: isDarkMode,
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  SizedBox(height: 20),
-                  InputField(
-                    label: "Password",
-                    hint: "Enter your password",
-                    icon: Icons.lock_outline,
-                    isPassword: true,
-                    isDarkMode: isDarkMode,
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    toggleObscure: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  InputField(
-                    label: "Confirm Password",
-                    hint: "Confirm your password",
-                    icon: Icons.lock_outline,
-                    isPassword: true,
-                    isDarkMode: isDarkMode,
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirmPassword,
-                    toggleObscure: () {
-                      setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  GestureDetector(
-                    onTap: _showTermsDialog,
-                    child: Text(
-                      "Terms and Conditions",
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _acceptTerms,
-                        onChanged: (value) {
-                          setState(() {
-                            _acceptTerms = value!;
-                          });
-                        },
-                      ),
-                      Expanded(
-                        child: Text("I accept all terms and conditions"),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _signUp,
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      backgroundColor: isDarkMode
-                          ? Colors.deepPurpleAccent
-                          : Color(0xFFF0B8F6),
-                    ),
-                    child: _isLoading
-                        ? CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                            "SIGN UP",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                  ),
-                  SizedBox(height: 20),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text.rich(
-                      TextSpan(
-                        text: "Already have an account? ",
-                        children: [
-                          TextSpan(
-                            text: "Login",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+    return SignUpView(
+      isDarkMode: isDarkMode,
+      nameController: _nameController,
+      emailController: _emailController,
+      passwordController: _passwordController,
+      confirmPasswordController: _confirmPasswordController,
+      isLoading: _isLoading,
+      obscurePassword: _obscurePassword,
+      obscureConfirmPassword: _obscureConfirmPassword,
+      acceptTerms: _acceptTerms,
+      onTogglePassword: () => setState(() => _obscurePassword = !_obscurePassword),
+      onToggleConfirmPassword: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+      onShowTerms: _showTermsDialog,
+      onChangeAccept: (v) => setState(() => _acceptTerms = v),
+      onSubmit: _signUp,
+      onGoToLogin: () { Navigator.pop(context); },
     );
   }
 }

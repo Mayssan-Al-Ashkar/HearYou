@@ -9,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'view/settings_view.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -366,41 +367,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSettingsCard({
-    required IconData icon,
-    required String title,
-    required bool isDarkMode,
-    VoidCallback? onTap,
-    Widget? trailing,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: isDarkMode
-                  ? [Colors.deepPurpleAccent, const Color(0xFF7E57C2)]
-                  : [const Color(0xFFF0B8F6), const Color(0xFFE0C4FF)],
-            ),
-          ),
-          child: Icon(icon, color: Colors.white, size: 22),
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-        ),
-        trailing: trailing ?? Icon(Icons.arrow_forward_ios, color: isDarkMode ? Colors.white70 : Colors.black54),
-        onTap: onTap,
-      ),
-    );
-  }
-
   Future<void> _logout() async {
     try {
       try { await GoogleSignIn().signOut(); } catch (_) {}
@@ -422,246 +388,52 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    // Background now controlled via AppBar flexibleSpace + body color
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        elevation: 0,
-        title: Text(
-          'Settings',
-          style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black, 
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: isDarkMode ? Colors.white : Colors.black, 
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
+    return SettingsScreenView(
+      model: SettingsViewModel(
+        userName: userName,
+        userPhotoUrl: userPhotoUrl,
+        isNotificationsEnabled: isNotificationsEnabled,
       ),
-
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          color: isDarkMode ? Colors.black : Colors.white,
-        ),
-        child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20, 
-                        backgroundColor: Colors.grey[300],
-                        child:
-                            userPhotoUrl.isNotEmpty
-                                ? ClipOval(
-                                  child: Image.network(
-                                    userPhotoUrl,
-                                    width: 40, 
-                                    height: 40, 
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Icon(
-                                        Icons.person,
-                                        color: Colors.grey[600],
-                                        size: 20,
-                                      );
-                                    },
-                                    loadingBuilder: (
-                                      context,
-                                      child,
-                                      loadingProgress,
-                                    ) {
-                                      if (loadingProgress == null) return child;
-                                      return CircularProgressIndicator(
-                                        value:
-                                            loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                                ? loadingProgress
-                                                        .cumulativeBytesLoaded /
-                                                    loadingProgress
-                                                        .expectedTotalBytes!
-                                                : null,
-                                      );
-                                    },
-                                  ),
-                                )
-                                : Icon(
-                                  Icons.person,
-                                  color: Colors.grey[600],
-                                  size: 20,
-                                ),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        userName.isNotEmpty ? userName : 'User Name',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: 20),
-                  Text(
-                    'Profile',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  _buildSettingsCard(
-                    icon: Icons.drive_file_rename_outline,
-                    title: 'Change Name',
-                    isDarkMode: isDarkMode,
-                    onTap: _showNameChangeDialog,
-                  ),
-                  _buildSettingsCard(
-                    icon: Icons.lock_outline,
-                    title: 'Change Password',
-                    isDarkMode: isDarkMode,
-                    onTap: _showChangePasswordDialog,
-                  ),
-                  _buildSettingsCard(
-                    icon: Icons.edit,
-                    title: 'Edit Info',
-                    isDarkMode: isDarkMode,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EditInfoPage()),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Notifications',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  _buildSettingsCard(
-                    icon: Icons.notifications_active_outlined,
-                    title: 'Notifications',
-                    isDarkMode: isDarkMode,
-                    trailing: Switch(
-                      value: isNotificationsEnabled,
-                      activeColor: isDarkMode ? Colors.deepPurpleAccent : Color(0xFFF0B8F6),
-                      onChanged: (bool value) async {
-                        setState(() {
-                          isNotificationsEnabled = value;
-                        });
-
-                        // Persist locally (device)
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setBool('notificationsEnabled', value);
-
-                        // Persist in Firestore for the current user
-                        final uid = FirebaseAuth.instance.currentUser?.uid;
-                        if (uid != null) {
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(uid)
-                              .set({'notificationsEnabled': value}, SetOptions(merge: true));
-                        }
-
-                        // Optional: notify other services via Realtime DB
-                        final DatabaseReference ref = FirebaseDatabase.instance
-                            .ref("notification_control");
-                        await ref.set(value ? "enable" : "disable");
-                      },
-                    ),
-                  ),
-                  _buildSettingsCard(
-                    icon: Icons.description_outlined,
-                    title: 'Weekly Reports',
-                    isDarkMode: isDarkMode,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/weeklyReport');
-                    },
-                  ),
-                  // Removed Account section; add Logout button under Help
-                  SizedBox(height: 10),
-                  Text(
-                    'About',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  _buildSettingsCard(
-                    icon: Icons.info_outline,
-                    title: 'About Us',
-                    isDarkMode: isDarkMode,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => AboutUs()),
-                      );
-                    },
-                  ),
-                  _buildSettingsCard(
-                    icon: Icons.help_outline,
-                    title: 'Help',
-                    isDarkMode: isDarkMode,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          pageBuilder: (context, animation, secondaryAnimation) => Help(),
-                          transitionsBuilder: (
-                            context,
-                            animation,
-                            secondaryAnimation,
-                            child,
-                          ) {
-                            const begin = Offset(1.0, 0.0);
-                            const end = Offset.zero;
-                            const curve = Curves.ease;
-                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                            return SlideTransition(position: animation.drive(tween), child: child);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: _logout,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(250, 50),
-                        backgroundColor:
-                            isDarkMode ? Colors.deepPurpleAccent : const Color(0xFFF0B8F6),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'LOGOUT',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      isDarkMode: isDarkMode,
+      onBack: () => Navigator.pop(context),
+      onChangeName: _showNameChangeDialog,
+      onChangePassword: _showChangePasswordDialog,
+      onEditInfo: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => EditInfoPage()));
+      },
+      onToggleNotifications: (bool value) async {
+        setState(() { isNotificationsEnabled = value; });
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('notificationsEnabled', value);
+        final uid = FirebaseAuth.instance.currentUser?.uid;
+        if (uid != null) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(uid)
+              .set({'notificationsEnabled': value}, SetOptions(merge: true));
+        }
+        final DatabaseReference ref = FirebaseDatabase.instance.ref("notification_control");
+        await ref.set(value ? "enable" : "disable");
+      },
+      onWeeklyReports: () { Navigator.pushNamed(context, '/weeklyReport'); },
+      onAboutUs: () { Navigator.push(context, MaterialPageRoute(builder: (context) => AboutUs())); },
+      onHelp: () {
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => Help(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.ease;
+              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              return SlideTransition(position: animation.drive(tween), child: child);
+            },
           ),
-        ),
-      ),
+        );
+      },
+      onLogout: _logout,
     );
   }
 }

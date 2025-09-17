@@ -15,11 +15,12 @@ import 'theme_provider.dart';
 import 'login.dart';
 import 'home.dart';
 import 'weekly_report_page.dart';
+import 'view/app_view.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = appNavigatorKey;
 
 const AndroidNotificationChannel defaultAndroidChannel = AndroidNotificationChannel(
   'high_importance_channel',
@@ -167,12 +168,13 @@ void main() async {
     });
   } catch (_) {}
 
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(ChangeNotifierProvider(create: (context) => ThemeProvider(), child: const MyAppView()));
+  // Ensure an initial screen is shown
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    navigatorKey.currentState?.pushReplacement(
+      MaterialPageRoute(builder: (context) => const SplashScreen()),
+    );
+  });
 
   // Handle notification tap when app launched from terminated state
   try {
@@ -186,29 +188,7 @@ void main() async {
   } catch (_) {}
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        return MaterialApp(
-          navigatorKey: navigatorKey,
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData.light(),
-          darkTheme: ThemeData.dark(),
-          themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          home: SplashScreen(),
-          routes: {
-            "/home": (context) => HomeScreen(showTutorialOnOpen: false),
-            "/weeklyReport": (context) => WeeklyReportPage(),
-          },
-        );
-      },
-    );
-  }
-}
+// App shell moved to view/MyAppView; we push Splash after runApp
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

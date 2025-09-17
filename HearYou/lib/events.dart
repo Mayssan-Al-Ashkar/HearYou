@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'view/events_view.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -15,7 +16,7 @@ class EventsPage extends StatefulWidget {
   State<EventsPage> createState() => _EventsPageState();
 }
 
-enum FilterType { all, today, yesterday, before, favorite }
+// keep using the same FilterType as in view
 
 class _EventsPageState extends State<EventsPage> {
   List<Event> _events = [];
@@ -161,143 +162,35 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final filteredEvents = getFilteredEvents();
+    final items = _events
+        .map((e) => EventVM(
+              id: e.id,
+              title: e.title,
+              description: e.description,
+              date: e.date,
+              time: e.time,
+              isImportant: e.isImportant,
+              fullDateTime: e.fullDateTime,
+            ))
+        .toList();
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        title: ShaderMask(
-          shaderCallback:
-              (bounds) => const LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 195, 155, 239),
-                  Color.fromARGB(255, 241, 166, 211),
-                ],
-              ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
-          child: const Text(
-            'Events',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        iconTheme: IconThemeData(
-          color: isDarkMode ? Colors.white : Colors.black,
-        ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 44,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDarkMode
-                      ? [const Color(0xFF1F1A24), const Color(0xFF2A2234)]
-                      : [Colors.white, const Color(0xFFF7ECFF)],
-                ),
-                border: Border.all(
-                  color: isDarkMode
-                      ? Colors.deepPurpleAccent.withOpacity(0.25)
-                      : const Color(0xFFE5D6F8),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(child: Center(child: _buildFilterChip(context, 'All', FilterType.all, isDarkMode))),
-                  Expanded(child: Center(child: _buildFilterChip(context, 'Today', FilterType.today, isDarkMode))),
-                  Expanded(child: Center(child: _buildFilterChip(context, 'Yesterday', FilterType.yesterday, isDarkMode))),
-                  Expanded(child: Center(child: _buildFilterChip(context, 'Before', FilterType.before, isDarkMode))),
-                  Expanded(child: Center(child: _buildFilterChip(context, 'Favorite', FilterType.favorite, isDarkMode))),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: isDarkMode ? Colors.black : Colors.white,
-              ),
-              child:
-                  filteredEvents.isEmpty
-                      ? const Center(child: Text('No events available.'))
-                      : RefreshIndicator(
-                        onRefresh: () async {
-                          _listenToEvents();
-                        },
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(16.0),
-                          itemCount: filteredEvents.length,
-                          itemBuilder: (context, index) {
-                            final event = filteredEvents[index];
-                            // Convert the event title to match the database format
-                            String eventKey = '';
-                            switch (event.title.toLowerCase()) {
-                              case 'high temperature':
-                                eventKey = 'additional_event';
-                                break;
-                              case 'low temperature':
-                                eventKey = 'additional_event';
-                                break;
-                              case 'door knocking':
-                                eventKey = 'door_knocking';
-                                break;
-                              case 'doorbell':
-                                eventKey = 'door_knocking';
-                                break;
-                              case 'baby crying':
-                                eventKey = 'baby_crying';
-                                break;
-                              case 'phone call':
-                                eventKey = 'phone_call';
-                                break;
-                              case 'baby movement':
-                                eventKey = 'baby_movement';
-                                break;
-                              case 'other sound':
-                                eventKey = 'additional_event';
-                                break;
-                              default:
-                                eventKey = 'additional_event';
-                            }
-
-                            final colorName = _eventColors[eventKey] ?? 'grey';
-                            print(
-                              'Event: ${event.title}, Key: $eventKey, Color: $colorName',
-                            );
-                            final color = _parseColorName(colorName);
-
-                            return EventCard(
-                              event: event,
-                              lineColor: color,
-                              onToggleImportant: () async {
-                                try {
-                                  await http.patch(
-                                    Uri.parse('$apiBase/events/${event.id}'),
-                                    headers: {"Content-Type": "application/json"},
-                                    body: jsonEncode({
-                                      'isImportant': !event.isImportant,
-                                    }),
-                                  );
-                                  await _listenToEvents();
-                                } catch (_) {}
-                              },
-                            );
-                          },
-                        ),
-                      ),
-            ),
-          ),
-        ],
-      ),
+    return EventsScreenView(
+      model: EventsViewModel(items: items, eventColors: _eventColors),
+      isDarkMode: isDarkMode,
+      selectedFilter: _selectedFilter,
+      onChangeFilter: (f) => setState(() => _selectedFilter = f),
+      parseColor: _parseColorName,
+      onToggleImportant: (id) async {
+        try {
+          final target = _events.firstWhere((e) => e.id == id);
+          await http.patch(
+            Uri.parse('$apiBase/events/$id'),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode({'isImportant': !target.isImportant}),
+          );
+          await _listenToEvents();
+        } catch (_) {}
+      },
     );
   }
 
@@ -416,81 +309,4 @@ class Event {
   }
 }
 
-class EventCard extends StatelessWidget {
-  final Event event;
-  final VoidCallback onToggleImportant;
-  final Color lineColor;
-
-  const EventCard({
-    super.key,
-    required this.event,
-    required this.onToggleImportant,
-    required this.lineColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 4,
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 6,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: lineColor,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(16),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        event.title,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        event.isImportant ? Icons.favorite : Icons.favorite_border,
-                        color:
-                            event.isImportant
-                                ? Colors.red[700]
-                                : Colors.grey,
-                      ),
-                      onPressed: onToggleImportant,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  'Date: ${DateFormat("MM/dd/yyyy").format(event.date)}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                Text(
-                  'Time: ${DateFormat("HH:mm").format(event.fullDateTime.toLocal())}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// EventCard UI moved into view/_EventCard

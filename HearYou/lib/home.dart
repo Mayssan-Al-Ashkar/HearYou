@@ -16,6 +16,7 @@ import 'theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'view/home_view.dart';
 
 const platform = MethodChannel('com.example.call/audio');
 
@@ -103,153 +104,30 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  HomeViewModel _toModel() {
+    return HomeViewModel(
+      userName: userName,
+      userPhotoUrl: userPhotoUrl,
+      items: items,
+      sliderImages: sliderImages,
+      currentImageIndex: currentImageIndex,
+      agentSuggestions: _agentSuggestions,
+      agentController: _agentController,
+      agentLoading: _agentLoading,
+      agentAnswer: _agentAnswer,
+      cameraKey: cameraKey,
+      alertsKey: alertsKey,
+      eventsKey: eventsKey,
+      sosKey: sosKey,
+      sliderKey: sliderKey,
+    );
+  }
+
   Widget _buildAssistantPanel(bool isDarkMode) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: FractionallySizedBox(
-        heightFactor: 0.6,
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isDarkMode
-                  ? [Color(0xFF1F1A24), Color(0xFF2A2234)]
-                  : [Color(0xFFF7F3FF), Color(0xFFEDE6FF)],
-            ),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            border: Border.all(
-              color: isDarkMode
-                  ? Colors.deepPurpleAccent.withOpacity(0.25)
-                  : Color(0xFFE5D6F8),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: isDarkMode
-                    ? Colors.black.withOpacity(0.6)
-                    : Color(0xFFB388FF).withOpacity(0.12),
-                blurRadius: 24,
-                offset: Offset(0, -8),
-              ),
-            ],
-          ),
-          padding: EdgeInsets.fromLTRB(16, 12, 16, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.deepPurpleAccent,
-                          Color(0xFF7E57C2),
-                        ],
-                      ),
-                    ),
-                    child: Icon(Icons.auto_awesome, color: Colors.white),
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    'Assistant',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  Spacer(),
-                  if (_agentLoading)
-                    SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                ],
-              ),
-              SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _agentController,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _sendAgentCommand(),
-                      decoration: InputDecoration(
-                        hintText: 'Ask to change settings... ',
-                        filled: true,
-                        fillColor: isDarkMode ? Color(0xFF2B2234) : Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: _agentLoading ? null : () => _sendAgentCommand(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurpleAccent,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    icon: Icon(Icons.send),
-                    label: Text('Send'),
-                  ),
-                ],
-              ),
-              if (_agentAnswer != null && _agentAnswer!.isNotEmpty) ...[
-                SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: isDarkMode ? Color(0xFF2B2234) : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isDarkMode
-                          ? Colors.deepPurpleAccent.withOpacity(0.25)
-                          : Color(0xFFE5D6F8),
-                    ),
-                  ),
-                  padding: EdgeInsets.all(12),
-                  child: Text(
-                    _agentAnswer!,
-                    style: TextStyle(
-                      color: isDarkMode ? Colors.white70 : Colors.black87,
-                    ),
-                  ),
-                ),
-              ],
-              SizedBox(height: 10),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _agentSuggestions.map((s) {
-                  return ActionChip(
-                    label: Text(s),
-                    onPressed: _agentLoading ? null : () => _sendAgentCommand(s),
-                    backgroundColor: isDarkMode ? Color(0xFF2B2234) : Colors.white,
-                    shape: StadiumBorder(side: BorderSide(color: isDarkMode ? Colors.deepPurpleAccent.withOpacity(0.25) : Color(0xFFE5D6F8))),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return HomeAssistantPanel(
+      isDarkMode: isDarkMode,
+      model: _toModel(),
+      onSendAgentCommand: (String? text) => _sendAgentCommand(text),
     );
   }
 
@@ -526,302 +404,53 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final bool isDarkMode = themeProvider.isDarkMode;
 
-    return Scaffold(extendBodyBehindAppBar: true, 
-  appBar: AppBar(
-    backgroundColor: Colors.transparent,
-    elevation: 0, 
-    titleSpacing: 16,
-    automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.grey[300],
-              child:
-                  userPhotoUrl.isNotEmpty
-                      ? ClipOval(
-                        child: Image.network(
-                          userPhotoUrl,
-                          width: 36,
-                          height: 36,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(Icons.person, color: Colors.grey[600]);
-                          },
-                        ),
-                      )
-                      : Icon(Icons.person, color: Colors.grey[600]),
-            ),
-            SizedBox(width: 8),
-            if (userName.isNotEmpty)
-              Text(
-                userName,
-                style: TextStyle(
-                  fontSize: 16, 
-                  fontWeight: FontWeight.bold,
-                  color:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white70
-                          : Colors.black87,
-                ),
-              ),
-          ],
-        ),
-        actions: [
-          Builder(
-            builder: (context) {
-              var themeProvider = Provider.of<ThemeProvider>(context);
-              bool isDarkMode = themeProvider.isDarkMode;
-
-              return Row(
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      isDarkMode ? Icons.nights_stay : Icons.wb_sunny,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-                    onPressed: () {
-                      themeProvider.toggleTheme();
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.settings,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SettingsPage()),
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: isDarkMode ? Colors.black : Colors.white,
-            ),
-            child: Column(
-              children: [
-                Padding(padding: const EdgeInsets.all(50.0)),
-                SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 1),
-                  child: SizedBox(
-                    height: 210,
-                    width: double.infinity,
-                    child: Card(
-                      key: sliderKey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                      color: isDarkMode ? Colors.grey[850] : Colors.white,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          sliderImages[currentImageIndex],
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                Expanded(
-                  child: GridView.builder(
-                padding: EdgeInsets.all(16),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  final key =
-                      item['title'] == 'Camera'
-                          ? cameraKey
-                          : item['title'] == 'Alerts'
-                          ? alertsKey
-                          : item['title'] == 'Events'
-                          ? eventsKey
-                          : item['title'] == 'SOS'
-                          ? sosKey
-                          : null;
-
-                  return InkWell(
-                    onTap: () async {
-                      if (item['title'] == 'SOS') {
-                        DateTime now = DateTime.now();
-                        if (firstSosTapTime == null ||
-                            now.difference(firstSosTapTime!) >
-                                sosTriggerDuration) {
-                          firstSosTapTime = now;
-                          sosTapCount = 1;
-                        } else {
-                          sosTapCount++;
-                        }
-
-                        if (sosTapCount == 5) {
-                          sosTapCount = 0;
-                          firstSosTapTime = null;
-
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SOSPage()),
-                          );
-                        }
-                      } else {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => item['page']),
-                        );
-                      }
-                    },
-                    child: Card(
-                      key: key,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: isDarkMode
-                                ? [Color(0xFF1F1A24), Color(0xFF2A2234)]
-                                : [Colors.white, Color(0xFFF7ECFF)],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isDarkMode
-                                ? Colors.deepPurpleAccent.withOpacity(0.25)
-                                : Color(0xFFE5D6F8),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: isDarkMode
-                                  ? Colors.transparent
-                                  : Color(0xFFB388FF).withOpacity(0.08),
-                              blurRadius: 16,
-                              offset: Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 56,
-                              height: 56,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  colors: isDarkMode
-                                      ? [Colors.deepPurpleAccent, Color(0xFF7E57C2)]
-                                      : [Color(0xFFF0B8F6), Color(0xFFE0C4FF)],
-                                ),
-                              ),
-                              child: Icon(
-                                item['title'] == 'Camera'
-                                    ? Icons.photo_camera
-                                    : item['title'] == 'Alerts'
-                                    ? Icons.notifications_active
-                                    : item['title'] == 'Events'
-                                    ? Icons.event_note
-                                    : Icons.emergency,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                            Text(
-                              item['title'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            right: 16,
-            bottom: 24,
-            child: SizedBox(
-              width: 56,
-              height: 56,
-              child: Material(
-                color: isDarkMode ? Colors.deepPurpleAccent : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-                elevation: 6,
-                child: isDarkMode
-                    ? InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (ctx) => _buildAssistantPanel(isDarkMode),
-                          );
-                        },
-                        child: Center(
-                          child: Icon(Icons.auto_awesome, color: Colors.white),
-                        ),
-                      )
-                    : Ink(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: const [
-                              Color(0xFFF0B8F6),
-                              Color(0xFFE0C4FF),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (ctx) => _buildAssistantPanel(isDarkMode),
-                            );
-                          },
-                          child: Center(
-                            child: Icon(Icons.auto_awesome, color: Colors.white),
-                          ),
-                        ),
-                      ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return HomeScreenView(
+      model: _toModel(),
+      isDarkMode: isDarkMode,
+      onToggleTheme: () => themeProvider.toggleTheme(),
+      onOpenSettings: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SettingsPage()),
+        );
+      },
+      onGridTap: (index) async {
+        final item = items[index];
+        if (item['title'] == 'SOS') {
+          DateTime now = DateTime.now();
+          if (firstSosTapTime == null ||
+              now.difference(firstSosTapTime!) > sosTriggerDuration) {
+            firstSosTapTime = now;
+            sosTapCount = 1;
+          } else {
+            sosTapCount++;
+          }
+          if (sosTapCount == 5) {
+            sosTapCount = 0;
+            firstSosTapTime = null;
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SOSPage()),
+            );
+          }
+        } else {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => item['page']),
+          );
+        }
+      },
+      onOpenAssistantPanel: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (ctx) => _buildAssistantPanel(isDarkMode),
+        );
+      },
     );
   }
 }

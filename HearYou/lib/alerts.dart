@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'theme_provider.dart';
+import 'view/alerts_view.dart';
 
 class AlertsPage extends StatefulWidget {
   const AlertsPage({super.key});
@@ -58,26 +59,20 @@ class _AlertsPageState extends State<AlertsPage> {
     } catch (_) {}
   }
 
-  Color _getColorFromName(String colorName) {
-    Map<String, Color> colorMap = {
-      'blue': Colors.blue,
-      'green': Colors.green,
-      'red': Colors.red,
-      'yellow': Colors.yellow,
-    };
+  final Map<String, Color> _palette = const {
+    'blue': Colors.blue,
+    'green': Colors.green,
+    'red': Colors.red,
+    'yellow': Colors.yellow,
+  };
 
-    return colorMap[colorName] ?? Colors.blue;
-  }
+  Color _getColorFromName(String name) => _palette[name] ?? Colors.blue;
 
   String _getColorName(Color color) {
-    Map<Color, String> colorMap = {
-      Colors.blue: 'blue',
-      Colors.green: 'green',
-      Colors.red: 'red',
-      Colors.yellow: 'yellow',
-    };
-
-    return colorMap[color] ?? 'blue';
+    for (final entry in _palette.entries) {
+      if (entry.value == color) return entry.key;
+    }
+    return 'blue';
   }
 
   void changeTempColor(String action, Color color) {
@@ -119,204 +114,22 @@ class _AlertsPageState extends State<AlertsPage> {
       tempSelectedColors = Map.from(selectedColors);
     }
 
-    return Scaffold(
-  extendBodyBehindAppBar: true,
-  appBar: AppBar(
-    title: Text(
-      "Alerts Settings",
-      style: TextStyle(
-        fontSize: 22,
-        fontWeight: FontWeight.bold,
-        color: isDarkMode ? Colors.white : Colors.black,
-      ),
-    ),
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    iconTheme: IconThemeData(
-      color: isDarkMode ? Colors.white : Colors.black,
-    ),
-  ),
-  body: Container(
-    decoration: BoxDecoration(
-      color: isDarkMode ? Colors.black : Colors.white,
-    ),
-    child: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20),
-                    Text(
-                      "Select Alert Colors",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w300,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        ...tempSelectedColors.keys.map((action) {
-                          return Column(
-                            children: [
-                              Card(
-                                color: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 0,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: isDarkMode
-                                          ? [Color(0xFF1F1A24), Color(0xFF2A2234)]
-                                          : [Colors.white, Color(0xFFF7ECFF)],
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: isDarkMode
-                                          ? Colors.deepPurpleAccent.withOpacity(0.25)
-                                          : Color(0xFFE5D6F8),
-                                    ),
-                                  ),
-                                  child: ListTile(
-                                  title: Text(
-                                    eventDisplayNames[action] ?? action,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w300,
-                                      color:
-                                          isDarkMode
-                                              ? Colors.white
-                                              : Colors.black,
-                                    ),
-                                  ),
-                                  trailing: DropdownButton<String>(
-                                    value: _getColorName(
-                                      tempSelectedColors[action]!,
-                                    ),
-                                    icon: Icon(
-                                      Icons.color_lens,
-                                      color:
-                                          isDarkMode
-                                              ? Colors.white
-                                              : Colors.black,
-                                    ),
-                                    underline: Container(),
-                                    dropdownColor:
-                                        isDarkMode
-                                            ? Colors.grey[900]
-                                            : Colors.white,
-                                    onChanged: (String? newColorName) {
-                                      if (newColorName != null) {
-                                        changeTempColor(
-                                          action,
-                                          _getColorFromName(newColorName),
-                                        );
-                                      }
-                                    },
-                                    items:
-                                        [
-                                          'blue',
-                                          'green',
-                                          'red',
-                                          'yellow',
-                                        ].map<DropdownMenuItem<String>>((
-                                          String colorName,
-                                        ) {
-                                          return DropdownMenuItem<String>(
-                                            value: colorName,
-                                            child: Container(
-                                              width: 24,
-                                              height: 24,
-                                              decoration: BoxDecoration(
-                                                color: _getColorFromName(
-                                                  colorName,
-                                                ),
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color:
-                                                      isDarkMode
-                                                          ? Colors.white
-                                                          : Colors.black,
-                                                  width: 1,
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-                                  ),
-                                ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                            ],
-                          );
-                        }),
-                        SizedBox(height: 10),
-                        SwitchListTile(
-                          title: Text(
-                            "Enable Vibration",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w300,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
-                          ),
-                          value: isVibrationOn,
-                          onChanged: (bool value) {
-                            setState(() {
-                              isVibrationOn = value;
-                            });
-                          },
-                          activeColor: isDarkMode
-                              ? Colors.deepPurpleAccent
-                              : Color.fromARGB(255, 229, 172, 240),
-                        ),
-                        SizedBox(height: 32),
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: _saveSettingsToMongo,
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 80,
-                                vertical: 15,
-                              ),
-                              backgroundColor: isDarkMode
-                                  ? Colors.deepPurpleAccent
-                                  : Color(0xFFF0B8F6),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              "Save Changes",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    final model = AlertsViewModel(
+      eventDisplayNames: eventDisplayNames,
+      selectedColorNamesTemp: tempSelectedColors.map((k, v) => MapEntry(k, _getColorName(v))),
+      colorPalette: _palette,
+      isVibrationOn: isVibrationOn,
+    );
+
+    return AlertsScreenView(
+      model: model,
+      isDarkMode: isDarkMode,
+      onBack: () => Navigator.pop(context),
+      onChangeColorName: (action, name) {
+        changeTempColor(action, _getColorFromName(name));
+      },
+      onToggleVibration: (v) => setState(() { isVibrationOn = v; }),
+      onSave: _saveSettingsToMongo,
     );
   }
 }
