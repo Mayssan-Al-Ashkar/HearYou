@@ -90,13 +90,12 @@ class HomeAssistantPanel extends StatelessWidget {
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [
-                          Colors.deepPurpleAccent,
-                          Color(0xFF7E57C2),
-                        ],
+                        colors: isDarkMode
+                            ? const [Colors.deepPurpleAccent, Color(0xFF7E57C2)]
+                            : const [Color(0xFFF0B8F6), Color(0xFFE0C4FF)],
                       ),
                     ),
                     child: const Icon(Icons.auto_awesome, color: Colors.white),
@@ -375,13 +374,12 @@ class HomeScreenView extends StatelessWidget {
                                 Container(
                                   width: 56,
                                   height: 56,
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     gradient: LinearGradient(
-                                      colors: [
-                                        Colors.deepPurpleAccent,
-                                        Color(0xFF7E57C2),
-                                      ],
+                                      colors: isDarkMode
+                                          ? const [Colors.deepPurpleAccent, Color(0xFF7E57C2)]
+                                          : const [Color(0xFFF0B8F6), Color(0xFFE0C4FF)],
                                     ),
                                   ),
                                   child: Icon(
