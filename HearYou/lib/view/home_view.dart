@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../core/app_config.dart';
+import '../widgets/gradient_icon_circle.dart';
 
 class HomeViewModel {
   final String userName;
@@ -82,9 +84,11 @@ class HomeAssistantPanel extends StatelessWidget {
             ],
           ),
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
               Row(
                 children: [
                   Container(
@@ -92,11 +96,7 @@ class HomeAssistantPanel extends StatelessWidget {
                     height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: isDarkMode
-                            ? const [Colors.deepPurpleAccent, Color(0xFF7E57C2)]
-                            : const [Color(0xFFF0B8F6), Color(0xFFE0C4FF)],
-                      ),
+                      gradient: LinearGradient(colors: isDarkMode ? AppGradients.badgeDark : AppGradients.badgeLight),
                     ),
                     child: const Icon(Icons.auto_awesome, color: Colors.white),
                   ),
@@ -195,6 +195,21 @@ class HomeAssistantPanel extends StatelessWidget {
                   );
                 }).toList(),
               ),
+                ],
+              ),
+              if (model.agentLoading)
+                Positioned.fill(
+                  child: Container(
+                    color: isDarkMode ? Colors.black26 : Colors.white54,
+                    child: const Center(
+                      child: SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: CircularProgressIndicator(strokeWidth: 3),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -371,28 +386,16 @@ class HomeScreenView extends StatelessWidget {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  width: 56,
-                                  height: 56,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: LinearGradient(
-                                      colors: isDarkMode
-                                          ? const [Colors.deepPurpleAccent, Color(0xFF7E57C2)]
-                                          : const [Color(0xFFF0B8F6), Color(0xFFE0C4FF)],
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    item['title'] == 'Camera'
-                                        ? Icons.photo_camera
-                                        : item['title'] == 'Alerts'
-                                            ? Icons.notifications_active
-                                            : item['title'] == 'Events'
-                                                ? Icons.event_note
-                                                : Icons.emergency,
-                                    color: Colors.white,
-                                    size: 28,
-                                  ),
+                                GradientIconCircle(
+                                  isDarkMode: isDarkMode,
+                                  icon: item['title'] == 'Camera'
+                                      ? Icons.photo_camera
+                                      : item['title'] == 'Alerts'
+                                          ? Icons.notifications_active
+                                          : item['title'] == 'Events'
+                                              ? Icons.event_note
+                                              : Icons.emergency,
+                                  size: 56,
                                 ),
                                 const SizedBox(height: 12),
                                 Text(

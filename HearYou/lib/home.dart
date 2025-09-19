@@ -16,6 +16,8 @@ import 'theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'services/events_service.dart';
+import 'services/api_client.dart';
 import 'view/home_view.dart';
 
 const platform = MethodChannel('com.example.call/audio');
@@ -76,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _agentController = TextEditingController();
   bool _agentLoading = false;
   String? _agentAnswer;
+  late final EventsService _eventsService;
 
   final List<String> _agentSuggestions = [
     'turn off vibration',
@@ -92,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _eventsService = EventsService(ApiClient());
     _loadUserData();
     _listenToPhoneCalls();
     _startImageSlider();
@@ -169,16 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _postEventToMongo(String title) async {
     try {
-      final nowIso = DateTime.now().toUtc().toIso8601String();
-      await http.post(
-        Uri.parse('$apiBase/events/'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          'title': title,
-          'eventAt': nowIso,
-          'source': 'phone_state',
-        }),
-      );
+      await _eventsService.postEvent(title, at: DateTime.now());
     } catch (_) {}
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/app_config.dart';
 
 class SettingsViewModel {
   final String userName;
@@ -56,11 +57,7 @@ class SettingsScreenView extends StatelessWidget {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: isDarkMode
-                  ? [Colors.deepPurpleAccent, const Color(0xFF7E57C2)]
-                  : [const Color(0xFFF0B8F6), const Color(0xFFE0C4FF)],
-            ),
+            gradient: LinearGradient(colors: isDarkMode ? AppGradients.badgeDark : AppGradients.badgeLight),
           ),
           child: Icon(icon, color: Colors.white, size: 22),
         ),

@@ -8,7 +8,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'services/api_client.dart';
+import 'services/auth_service.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import 'theme_provider.dart';
@@ -113,17 +114,8 @@ void main() async {
         SetOptions(merge: true),
       );
       // Best-effort register to backend auth server if reachable
-      // API_BASE is provided from --dart-define (same as app)
-      const String apiBase = String.fromEnvironment(
-        'API_BASE',
-        defaultValue: 'http://10.0.2.2:5000',
-      );
       try {
-        await http.post(
-          Uri.parse('$apiBase/auth/register-fcm'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'uid': user.uid, 'token': token}),
-        );
+        await AuthService(ApiClient()).registerFcmToken(uid: user.uid, token: token);
       } catch (_) {}
     }
   } catch (_) {}
