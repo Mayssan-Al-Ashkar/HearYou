@@ -86,7 +86,10 @@ def list_events():
     """
     db = current_app.config.get("DB")
     coll = db["events"]
-    items = list(coll.find({}).sort("eventAt", -1))
+    # Optional user scoping: /events/?uid=<firebase_uid>
+    uid = (request.args.get("uid") or "").strip()
+    q = {"uid": uid} if uid else {}
+    items = list(coll.find(q).sort("eventAt", -1))
     return jsonify({"ok": True, "events": [_serialize_event(x) for x in items]})
 
 
@@ -117,6 +120,7 @@ def create_event():
     coll = db["events"]
     data = request.get_json(force=True, silent=True) or {}
     title = (data.get("title") or "").strip()
+    uid = (data.get("uid") or "").strip()  # firebase uid or app user id (string)
     # Ignore description/source in new events
     description = ""
     is_important = bool(data.get("isImportant", False))
@@ -149,6 +153,7 @@ def create_event():
         "eventAt": event_at,
         "createdAt": datetime.now(timezone.utc),
         # intentionally omitting source
+        **({"uid": uid} if uid else {}),
     }
     inserted = coll.insert_one(doc)
     created = coll.find_one({"_id": inserted.inserted_id})
@@ -162,12 +167,25 @@ def create_event():
             settings_doc = (db["settings"].find_one({"_id": "global"}) or {})
             if _is_within_quiet_hours(settings_doc.get("quietHours")):
                 raise Exception("Within quiet hours; skipping FCM")
-            # Collect unique tokens
+            # Collect tokens: if uid provided, target that user only; else fall back to all
             tokens = set()
-            for user in users_coll.find({}, {"fcmTokens": 1}):
-                for t in user.get("fcmTokens", []) or []:
-                    if isinstance(t, str) and len(t) > 20:
-                        tokens.add(t)
+            if uid:
+                # Try both string _id and ObjectId
+                for query in ([{"_id": uid}], [{"_id": ObjectId(uid)}] if len(uid) == 24 else []):
+                    try:
+                        user_doc = users_coll.find_one(*query)
+                        if user_doc:
+                            for t in user_doc.get("fcmTokens", []) or []:
+                                if isinstance(t, str) and len(t) > 20:
+                                    tokens.add(t)
+                            break
+                    except Exception:
+                        pass
+            if not tokens:
+                for user in users_coll.find({}, {"fcmTokens": 1}):
+                    for t in user.get("fcmTokens", []) or []:
+                        if isinstance(t, str) and len(t) > 20:
+                            tokens.add(t)
 
             if tokens:
                 headers = {
@@ -184,6 +202,7 @@ def create_event():
                         "eventId": str(inserted.inserted_id),
                         "source": doc.get("source", "ml"),
                         "eventAt": doc.get("eventAt").isoformat() if doc.get("eventAt") else "",
+                        "uid": uid,
                     },
                     "android": {"priority": "high"},
                     "apns": {"headers": {"apns-priority": "10"}},
