@@ -11,7 +11,8 @@ class SettingsService {
     final raw = (s['colors'] as Map<String, dynamic>? ) ?? {};
     final colors = <String, String>{ for (final e in raw.entries) e.key: e.value.toString() };
     final vibration = s['vibration'] == true;
-    // Default display names
+
+    
     final display = <String, String>{
       'baby_crying': 'Baby Crying',
       'door_knocking': 'Door Knocking',
