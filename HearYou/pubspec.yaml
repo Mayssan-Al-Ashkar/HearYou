@@ -1,0 +1,86 @@
+name: motherhelper
+description: "helper mother mobile application"
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.0
+dependencies:
+  # tflite_flutter: ^0.10.4
+  http: ^1.1.0
+  cloud_firestore: ^5.6.6
+  tutorial_coach_mark: ^1.2.0
+  firebase_core: ^3.12.1
+  firebase_auth: ^5.5.2
+  firebase_messaging: ^15.2.5
+  google_sign_in: ^6.3.0
+  flutter_facebook_auth: ^7.1.1
+  provider: ^6.0.5
+  webview_flutter: ^4.2.2
+  flutter:
+    sdk: flutter
+  video_player: ^2.8.2
+  flutter_vlc_player: ^7.4.3
+  permission_handler: ^11.0.1
+  cupertino_icons: ^1.0.8
+  shared_preferences: ^2.5.3
+  firebase_database: ^11.3.5
+  easy_onvif: 3.1.2
+  url_launcher: ^6.2.4
+  geolocator: ^10.0.1
+  audioplayers: ^5.2.1
+  geocoding: ^2.1.0
+  flutter_local_notifications: ^17.1.2
+  phone_state: ^2.1.1
+  fl_chart: ^0.63.0
+
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.14.3
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/models/baby_cry_model.tflite
+    - assets/emergencyalaram.mp3
+    - images/logo.png
+    - images/image1.jpg
+    - images/image2.jpg
+    - images/image3.jpg
+    - images/image4.jpg
+    - images/camera.png
+    - images/alertSetting.png
+    - images/eventlog1.png
+    - images/setting.png
+    - images/SOS.png
+    - images/logout.png
+    - images/user.png
+    - images/appicon.png
+    - images/github.png
+    - images/Google.png
+    - images/facebook.png
+    - images/darkmode.png
+    - images/changename.png
+    - images/changepass.png
+    - images/editprofile.png
+    - images/notification.png
+    - images/about.png
+    - images/help.png
+    - images/deleteacc.png
+    - images/mysn.jpg
+    - images/babycrying.png
+    - images/doorknock.png
+    - images/babymv.png
+    - images/phonecall.png
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "images/appicon.png"
+  adaptive_icon_background: "#ffffff"

@@ -1,0 +1,38 @@
+# Ignore large files and common generated files
+
+# Ignore all files larger than 8MB (requires git-lfs or manual check)
+# Git itself can't filter by size in .gitignore, but you can list known large files or patterns
+
+# Example: Ignore database dumps, logs, and binaries
+*.log
+*.sqlite
+*.db
+*.bak
+*.tmp
+*.pyc
+__pycache__/
+*.exe
+*.dll
+*.bin
+
+# Ignore data/output folders if you have them
+data/
+output/
+uploads/
+*.zip
+*.tar.gz
+
+# Add specific large files if you know their names
+# /path/to/largefile.ext
+
+# VSCode settings
+.vscode/venv/
+venv_vision/
+venv_audio/
+venv_api/
+.venv/
+__pycache__/
+*.pyc
+Server/.tfhub_cache/
+venv/
+.vscode/
