@@ -17,7 +17,6 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
 
-    # Swagger UI / OpenAPI docs
     app.config["SWAGGER"] = {
         "title": "HearYou API",
         "uiversion": 3,
@@ -27,7 +26,7 @@ def create_app():
     app.config["MONGODB_URI"] = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
     app.config["DB_NAME"] = os.getenv("DB_NAME", "hearyou")
 
-    mongo_client = MongoClient(app.config["MONGODB_URI"])  # local/dev
+    mongo_client = MongoClient(app.config["MONGODB_URI"])
     db = mongo_client[app.config["DB_NAME"]]
     users = db["users"]
     app.config["DB"] = db
@@ -96,7 +95,6 @@ def create_app():
         except Exception as exc:
             return jsonify({"ok": False, "message": str(exc)}), 500
 
-    # Register blueprints
     app.register_blueprint(events_bp, url_prefix="/events")
     app.register_blueprint(settings_bp, url_prefix="/settings")
     app.register_blueprint(weekly_reports_bp, url_prefix="/weekly_reports")

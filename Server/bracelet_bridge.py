@@ -10,7 +10,6 @@ from pymongo.errors import PyMongoError
 import requests
 
 
-# -------------------- Configuration --------------------
 API_BASE = os.getenv("API_BASE", "http://127.0.0.1:5000")
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 MONGO_DB = os.getenv("MONGO_DB", "hearyou")
@@ -22,7 +21,6 @@ SERIAL_BAUD = int(os.getenv("BRACELET_BAUD", "9600"))
 VIBRATION_MS = int(os.getenv("BRACELET_VIB_MS", "800"))
 
 
-# -------------------- Arduino I/O --------------------
 class BraceletSerial:
     def __init__(self, port: str, baud: int):
         self.port = port
@@ -32,9 +30,7 @@ class BraceletSerial:
 
     def connect(self):
         self.ser = serial.Serial(self.port, self.baud, timeout=1)
-        # small warm-up time so Arduino resets and sends READY
         time.sleep(2.0)
-        # Flush any boot messages
         self.ser.reset_input_buffer()
 
     def close(self):
@@ -54,7 +50,6 @@ class BraceletSerial:
             if vibrate is not None:
                 payload["vibrate"] = int(max(0, min(255, vibrate)))
         line = json.dumps(payload)
-        # Debug print to observe what is sent to Arduino
         try:
             print(f"[BRACELET] SEND {line}")
         except Exception:
@@ -74,10 +69,8 @@ class BraceletSerial:
                 yield None
 
 
-# -------------------- Mongo + Settings --------------------
 def event_title_to_key(title: str) -> str:
     t = (title or "").strip().lower()
-    # normalize a few variants
     mapping = {
         "baby crying": "baby_crying",
         "baby movement": "baby_movement",
@@ -128,7 +121,6 @@ class SettingsCache:
 
     def get_vibrate_intensity(self) -> int:
         with self.lock:
-            # respect quiet hours
             try:
                 if self._is_within_quiet_hours_locked():
                     return 0
@@ -166,13 +158,11 @@ def watch_settings_changes(settings: SettingsCache, stop_event: threading.Event)
                     break
                 settings.reload()
     except PyMongoError:
-        # Poll every 5s
         while not stop_event.is_set():
             settings.reload()
             time.sleep(5)
 
 
-# -------------------- Event handling --------------------
 def handle_event_doc(doc: dict, settings: SettingsCache, bracelet: BraceletSerial):
     title = doc.get("title", "")
     color = settings.get_color_for_event(title)
@@ -183,7 +173,6 @@ def handle_event_doc(doc: dict, settings: SettingsCache, bracelet: BraceletSeria
         pass
     bracelet.send_command(color=color, vibrate=vibrate)
     if vibrate > 0:
-        # stop vibration after configured ms but keep color
         def stop_vib():
             time.sleep(VIBRATION_MS / 1000.0)
             bracelet.send_command(vibrate=0)
@@ -213,7 +202,6 @@ def watch_events(db, settings: SettingsCache, bracelet: BraceletSerial, stop_eve
             time.sleep(1.0)
 
 
-# -------------------- Button -> API event --------------------
 def post_door_knocking_event():
     try:
         now_iso = datetime.now(timezone.utc).isoformat()
@@ -237,7 +225,6 @@ def listen_button(bracelet: BraceletSerial, stop_event: threading.Event):
             post_door_knocking_event()
 
 
-# -------------------- Main --------------------
 def main():
     mongo = MongoClient(MONGO_URI)
     db = mongo[MONGO_DB]

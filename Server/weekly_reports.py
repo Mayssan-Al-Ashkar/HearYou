@@ -8,7 +8,6 @@ weekly_reports_bp = Blueprint("weekly_reports_bp", __name__)
 
 
 def _serialize_report(doc: dict) -> dict:
-    # Align with provided schema: summary, recommendations[], generatedAt, weekStartIso, weekEndIso
     created_at = (
         doc.get("generatedAt")
         or doc.get("createdAt")
@@ -20,7 +19,6 @@ def _serialize_report(doc: dict) -> dict:
         except Exception:
             created_at = datetime.now(timezone.utc)
     recs = doc.get("recommendations") or []
-    # Ensure recommendations are simple dicts with title/detail/order
     norm_recs = []
     for r in recs:
         try:
@@ -46,21 +44,8 @@ def _serialize_report(doc: dict) -> dict:
     }
 
 
-@weekly_reports_bp.route("/", methods=["GET"])  # GET /weekly_reports/
+@weekly_reports_bp.route("/", methods=["GET"])  
 def list_weekly_reports():
-    """List weekly reports
-    ---
-    tags: [Weekly Reports]
-    parameters:
-      - in: query
-        name: userId
-        type: string
-      - in: query
-        name: email
-        type: string
-    responses:
-      200: {description: List returned}
-    """
     db = current_app.config.get("DB")
     coll = db["weekly_reports"]
     user_id = request.args.get("userId", "").strip()
@@ -88,7 +73,6 @@ def list_weekly_reports():
 
     items = list(coll.find(query).sort("createdAt", -1))
     if not items:
-        # Fallback: return latest reports regardless of user linkage
         items = list(coll.find({}).sort("createdAt", -1).limit(20))
     return jsonify({"ok": True, "reports": [_serialize_report(x) for x in items]})
 

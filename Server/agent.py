@@ -54,7 +54,6 @@ def call_gemini(prompt: str) -> str:
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise RuntimeError("Missing GOOGLE_API_KEY")
-    # Use REST to avoid grpc dependency issues
     url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
     headers = {"Content-Type": "application/json", "x-goog-api-key": api_key}
     payload = {
@@ -71,7 +70,6 @@ def call_gemini(prompt: str) -> str:
     resp = requests.post(url, headers=headers, json=payload, timeout=30)
     resp.raise_for_status()
     data = resp.json()
-    # Extract the first candidate text
     try:
         text = data["candidates"][0]["content"]["parts"][0]["text"]
     except Exception:
@@ -80,28 +78,22 @@ def call_gemini(prompt: str) -> str:
 
 
 def _parse_json_lenient(raw_text: str) -> dict:
-    """Attempt to parse JSON even if wrapped in code fences or extra text."""
     if not isinstance(raw_text, str):
         return {}
     text = (raw_text or "").strip()
-    # Common wrappers: ```json ... ```, ``` ... ```
     if text.startswith("```"):
-        # remove opening fence with optional language
         first_newline = text.find("\n")
         if first_newline != -1:
             text = text[first_newline + 1 :]
-        # remove trailing fence
         if text.endswith("````"):
             text = text[:-4]
         elif text.endswith("```"):
             text = text[:-3]
         text = text.strip()
-    # Try direct parse
     try:
         return json.loads(text)
     except Exception:
         pass
-    # Fallback: extract substring between first { and last }
     try:
         start = text.index("{")
         end = text.rindex("}")

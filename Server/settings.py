@@ -12,14 +12,8 @@ DEFAULT_COLORS = {
 }
 
 
-@settings_bp.route("/", methods=["GET"])  # GET /settings/
+@settings_bp.route("/", methods=["GET"])  
 def get_settings():
-    """Get global settings
-    ---
-    tags: [Settings]
-    responses:
-      200: {description: Settings returned}
-    """
     db = current_app.config.get("DB")
     doc = db["settings"].find_one({"_id": "global"}) or {}
     return jsonify({
@@ -33,25 +27,8 @@ def get_settings():
     })
 
 
-@settings_bp.route("/", methods=["POST"])  # POST /settings/
+@settings_bp.route("/", methods=["POST"])  
 def save_settings():
-    """Save global settings
-    ---
-    tags: [Settings]
-    consumes:
-      - application/json
-    parameters:
-      - in: body
-        name: body
-        schema:
-          type: object
-          properties:
-            colors: {type: object}
-            vibration: {type: boolean}
-    responses:
-      200: {description: Saved}
-      400: {description: Invalid payload}
-    """
     db = current_app.config.get("DB")
     data = request.get_json(force=True, silent=True) or {}
     colors = data.get("colors") or {}

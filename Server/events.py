@@ -11,7 +11,6 @@ events_bp = Blueprint("events_bp", __name__)
 
 
 def _format_date_time(dt: datetime) -> tuple[str, str]:
-    # Match Flutter UI expectations: MM/dd/yyyy and HH:mm
     return dt.strftime("%m/%d/%Y"), dt.strftime("%H:%M")
 
 
@@ -22,7 +21,6 @@ def _serialize_event(doc: dict) -> dict:
             event_at = datetime.fromisoformat(event_at)
         except Exception:
             event_at = datetime.now(timezone.utc)
-    # Ensure timezone-aware (Mongo returns naive datetimes by default)
     try:
         if event_at.tzinfo is None or event_at.tzinfo.utcoffset(event_at) is None:
             event_at = event_at.replace(tzinfo=timezone.utc)
@@ -32,7 +30,6 @@ def _serialize_event(doc: dict) -> dict:
     return {
         "id": str(doc.get("_id")),
         "title": doc.get("title", ""),
-        # Do not expose description going forward; keep empty for UI compatibility
         "description": "",
         "date": date_str,
         "time": time_str,
@@ -67,7 +64,6 @@ def _is_within_quiet_hours(quiet: dict | None) -> bool:
         eh, em = int(end[:2]), int(end[3:])
         start_t = now.replace(hour=sh, minute=sm, second=0, microsecond=0)
         end_t = now.replace(hour=eh, minute=em, second=0, microsecond=0)
-        # If window crosses midnight
         if start_t <= end_t:
             return start_t <= now <= end_t
         else:
@@ -75,53 +71,23 @@ def _is_within_quiet_hours(quiet: dict | None) -> bool:
     except Exception:
         return False
 
-@events_bp.route("/", methods=["GET"])  # GET /events/
+@events_bp.route("/", methods=["GET"])  
 def list_events():
-    """List events
-    ---
-    tags: [Events]
-    responses:
-      200:
-        description: List of events
-    """
     db = current_app.config.get("DB")
     coll = db["events"]
-    # Optional user scoping: /events/?uid=<firebase_uid>
     uid = (request.args.get("uid") or "").strip()
     q = {"uid": uid} if uid else {}
     items = list(coll.find(q).sort("eventAt", -1))
     return jsonify({"ok": True, "events": [_serialize_event(x) for x in items]})
 
 
-@events_bp.route("/", methods=["POST"])  # POST /events/
+@events_bp.route("/", methods=["POST"])  
 def create_event():
-    """Create an event
-    ---
-    tags: [Events]
-    consumes:
-      - application/json
-    parameters:
-      - in: body
-        name: body
-        schema:
-          type: object
-          required: [title]
-          properties:
-            title: {type: string}
-            description: {type: string}
-            isImportant: {type: boolean}
-            eventAt: {type: string, format: date-time}
-            source: {type: string}
-    responses:
-      201:
-        description: Created
-    """
     db = current_app.config.get("DB")
     coll = db["events"]
     data = request.get_json(force=True, silent=True) or {}
     title = (data.get("title") or "").strip()
-    uid = (data.get("uid") or "").strip()  # firebase uid or app user id (string)
-    # Ignore description/source in new events
+    uid = (data.get("uid") or "").strip() 
     description = ""
     is_important = bool(data.get("isImportant", False))
     event_at_iso = data.get("eventAt")
@@ -134,7 +100,6 @@ def create_event():
     except Exception:
         event_at = datetime.now(timezone.utc)
 
-    # Auto-prioritize if not explicitly set and a priority exists in settings
     try:
         settings_coll = db["settings"]
         settings_doc = settings_coll.find_one({"_id": "global"}) or {}
@@ -148,17 +113,14 @@ def create_event():
 
     doc = {
         "title": title,
-        # intentionally omitting description
         "isImportant": is_important,
         "eventAt": event_at,
         "createdAt": datetime.now(timezone.utc),
-        # intentionally omitting source
         **({"uid": uid} if uid else {}),
     }
     inserted = coll.insert_one(doc)
     created = coll.find_one({"_id": inserted.inserted_id})
 
-    # Send FCM push notification if configured (skip during quiet hours)
     try:
         server_key = os.getenv("FCM_SERVER_KEY")
         if server_key:
@@ -167,10 +129,8 @@ def create_event():
             settings_doc = (db["settings"].find_one({"_id": "global"}) or {})
             if _is_within_quiet_hours(settings_doc.get("quietHours")):
                 raise Exception("Within quiet hours; skipping FCM")
-            # Collect tokens: if uid provided, target that user only; else fall back to all
             tokens = set()
             if uid:
-                # Try both string _id and ObjectId
                 for query in ([{"_id": uid}], [{"_id": ObjectId(uid)}] if len(uid) == 24 else []):
                     try:
                         user_doc = users_coll.find_one(*query)
@@ -211,12 +171,10 @@ def create_event():
     except Exception:
         pass
 
-    # Update Firebase Realtime Database Notifications/message if configured
     try:
-        rtdb_url = os.getenv("FIREBASE_RTDB_URL")  # e.g., https://hearyou-XXXX-default-rtdb.firebaseio.com
+        rtdb_url = os.getenv("FIREBASE_RTDB_URL") 
         if rtdb_url:
             message_value = doc.get("title", "Event")
-            # Write to /Notifications/message
             requests.patch(
                 f"{rtdb_url}/Notifications.json",
                 data=json.dumps({"message": message_value}),
@@ -227,31 +185,8 @@ def create_event():
     return jsonify({"ok": True, "event": _serialize_event(created)}), 201
 
 
-@events_bp.route("/<event_id>", methods=["PATCH"])  # PATCH /events/<id>
+@events_bp.route("/<event_id>", methods=["PATCH"]) 
 def update_event(event_id: str):
-    """Update an event
-    ---
-    tags: [Events]
-    consumes:
-      - application/json
-    parameters:
-      - in: path
-        name: event_id
-        required: true
-        type: string
-      - in: body
-        name: body
-        schema:
-          type: object
-          properties:
-            title: {type: string}
-            description: {type: string}
-            isImportant: {type: boolean}
-    responses:
-      200: {description: Updated}
-      400: {description: Invalid id or payload}
-      404: {description: Not found}
-    """
     db = current_app.config.get("DB")
     coll = db["events"]
     try:

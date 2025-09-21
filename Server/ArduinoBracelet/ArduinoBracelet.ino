@@ -1,14 +1,11 @@
-// Pins
 const int PIN_RED = 9;
 const int PIN_GREEN = 10;
 const int PIN_BLUE = 11;
 const int PIN_MOTOR = 6;
 const int PIN_BUTTON = 2;
-// Debounce
 unsigned long lastButtonChangeMs = 0;
 int lastButtonState = HIGH;
 bool reportedDown = false;
-// Define Rgb BEFORE any functions that use it
 struct Rgb { uint8_t r; uint8_t g; uint8_t b; };
 void setRgb(uint8_t r, uint8_t g, uint8_t b) {
   analogWrite(PIN_RED, r);
@@ -45,7 +42,6 @@ void applyCommand(const String &line) {
     Serial.println(F("ACK"));
     return;
   }
-  // Find color value
   Rgb rgb = {0, 0, 0};
   int colorIdx = s.indexOf("\"color\"");
   if (colorIdx >= 0) {
@@ -58,7 +54,6 @@ void applyCommand(const String &line) {
       else rgb = parseColorName(colorVal);
     }
   }
-  // Find vibrate value (0/1 or 0-255)
   uint8_t vib = 0;
   int vibIdx = s.indexOf("\"vibrate\"");
   if (vibIdx >= 0) {
@@ -85,7 +80,6 @@ void setup() {
   Serial.println(F("READY"));
 }
 void loop() {
-  // 1) Read serial lines
   static String line = "";
   while (Serial.available() > 0) {
     char ch = (char)Serial.read();
@@ -96,17 +90,16 @@ void loop() {
       }
     } else {
       line += ch;
-      if (line.length() > 200) line = ""; // safety
+      if (line.length() > 200) line = "";
     }
   }
-  // 2) Report button state (edge on press)
   int s = digitalRead(PIN_BUTTON);
   unsigned long now = millis();
   if (s != lastButtonState) {
     lastButtonChangeMs = now;
     lastButtonState = s;
   }
-  if ((now - lastButtonChangeMs) > 30) { // debounce 30ms
+  if ((now - lastButtonChangeMs) > 30) {
     if (s == LOW && !reportedDown) {
       Serial.println(F("BTN:DOWN"));
       reportedDown = true;

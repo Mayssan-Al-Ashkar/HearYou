@@ -53,7 +53,6 @@ def generate_frames():
 
 @app.route('/video_feed')
 def video_feed():
-    """Video streaming route."""
     print(f"Serving video feed with zoom level: {zoom_level}")
     return Response(generate_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
