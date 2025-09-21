@@ -60,9 +60,9 @@
 | ![fsdaf](./readme/hardware.gif)            | ![fsdaf](./readme/hardware1.jpg)      | ![fsdaf](./readme/hardware3.jpg)      |
 
 
-| SOS Emergency call                         | weekly reports recommendation         | 
-| ---------------------------------------    | ------------------------------------- | 
-| ![Landing](./readme/sos.gif)               | ![fsdaf](./readme/weeklyreports.gif)  | 
+| SOS Emergency call                         | weekly reports recommendation         | dark mode                             |
+| ---------------------------------------    | ------------------------------------- | ------------------------------------- |
+| ![Landing](./readme/sos.gif)               | ![fsdaf](./readme/weeklyreports.gif)  | ![fsdaf](./readme/darkmode.gif)  |
 
 
 
