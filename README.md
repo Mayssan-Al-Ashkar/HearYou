@@ -5,15 +5,15 @@
 <!-- project overview -->
 <img src="./readme/title2.svg"/>
 
-> HearYou is a smart safety system designed to support deaf and hard-of-hearing mothers, it helps them stay aware of important events at home, like when the baby cries, someone knocks on the door, or a phone call comes in and other important events.
-> The system works with two main parts: mobile application and physical bracelet.
+- HearYou is a smart safety system designed to support deaf and hard-of-hearing mothers, it helps them stay aware of important events at home, like when the baby cries, someone knocks on the door, or a phone call comes in and other important events.
+- The system works with two main parts: mobile application and physical bracelet.
 
 <br><br>
 
 <!-- System Design -->
 <img src="./readme/title3.svg"/>
 
-### Add Title Here
+
 
 - Component Diagram
 <img src="./readme/components.png"/>
@@ -25,7 +25,7 @@
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
 
-### Add Title Here
+
 
 **The Most Remarkable Features**
 
@@ -46,23 +46,23 @@
 
 | Login screen                            | settings screen                       | ai agent screen                       |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Landing](./readme/login.mp4)          | ![fsdaf](./readme/google.mp4)         | ![fsdaf](./readme/aiagent.mp4)        |
+| ![Landing](./readme/login.gif)          | ![fsdaf](./readme/google.gif)         | ![fsdaf](./readme/aiagent.gif)        |
 
 
 | ml baby movement                        | live video streaming                  |  notification                               |
 | --------------------------------------- | ------------------------------------- | -------------------------------------       |
-| ![Landing](./readme/notificationml.mp4) | ![fsdaf](./readme/camera.mp4)         | ![Landing](./readme/notificationphoto.jpg)  |
+| ![Landing](./readme/notificationml.gif) | ![fsdaf](./readme/camera.gif)         | ![Landing](./readme/notificationphoto.jpg)  |
 
 
 
 | bracelet prototype                         | bracelet prototype                    | bracelet prototype                    |
 | ---------------------------------------    | ------------------------------------- | ------------------------------------- |
-| ![fsdaf](./readme/hardware.mp4)            | ![fsdaf](./readme/hardware1.jpg)      | ![fsdaf](./readme/hardware3.jpg)      |
+| ![fsdaf](./readme/hardware.gif)            | ![fsdaf](./readme/hardware1.jpg)      | ![fsdaf](./readme/hardware3.jpg)      |
 
 
 | SOS Emergency call                         | weekly reports recommendation         | 
 | ---------------------------------------    | ------------------------------------- | 
-| ![Landing](./readme/sos.mp4)               | ![fsdaf](./readme/weeklyreports.mp4)  | 
+| ![Landing](./readme/sos.gif)               | ![fsdaf](./readme/weeklyreports.gif)  | 
 
 
 
@@ -81,12 +81,18 @@
 
 test case                             | test case                             | 
 ------------------------------------- | ------------------------------------- | 
-![fsdaf](./readme/swagger2.png)       | ![fsdaf](./readme/)                   | 
+![fsdaf](./readme/swagger2.png)       | ![fsdaf](./readme/linear.png)         | 
 
 
 validation                                | Validation                            | 
 -------------------------------------     | ------------------------------------- | 
-![fsdaf](./readme/validation1)            |  ![fsdaf](./readme/validation2)              | 
+![fsdaf](./readme/validation1.png)            |  ![fsdaf](./readme/validation2.png)       | 
+
+
+ci                                        | ci                                    | 
+-------------------------------------     | ------------------------------------- | 
+![fsdaf](./readme/ci.png)                 |  ![fsdaf](./readme/validation2)       |
+
 
 
 <br><br>
