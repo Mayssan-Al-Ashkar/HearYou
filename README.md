@@ -26,19 +26,19 @@
 
 
 - Component Diagram  
-<img src="./readme/components.png" width="400"/>  
+<img src="./readme/components.png" width="600" height="400"/>  
 <br><br>
 
 - ER Diagram  
-<img src="./readme/ER.png" width="400"/>  
+<img src="./readme/ER.png" width="600" height="400"/>  
 <br><br>
 
 - Circuit Design  
-<img src="./readme/tinker.png" width="400"/>  
+<img src="./readme/tinker.png" width="600" height="400"/>  
 <br><br>
 
 - n8n overflow 
-<img src="./readme/n8n.png" width="400"/>  
+<img src="./readme/n8n.png" width="600" height="400"/>  
 <br><br>
 
 
@@ -55,7 +55,7 @@
 
 - **Personalized AI Optimization Plans:** Clients receive intelligent, data-driven strategies to optimize energy usage, reduce costs, and promote sustainability based on their consumption behaviors.  
 
-<img src="./readme/features.png"/>
+<img src="./readme/features.png" width="600" height="400"/>
 
 - **Future Works:**For the future, I am planning to include a fire detection system in the baby’s room. The goal of this feature is to quickly detect any signs of fire, so the system can help prevent dangerous situations and reduce the risk of harm for both the baby and the family.
 
