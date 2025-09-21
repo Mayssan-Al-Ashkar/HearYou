@@ -114,7 +114,7 @@ class EventsScreenView extends StatelessWidget {
                   Expanded(child: Center(child: _chip('Today', FilterType.today))),
                   Expanded(child: Center(child: _chip('Yesterday', FilterType.yesterday))),
                   Expanded(child: Center(child: _chip('Before', FilterType.before))),
-                  Expanded(child: Center(child: _chip('Favorite', FilterType.favorite))),
+                  Expanded(child: Center(child: _chip('Important', FilterType.favorite))),
                 ],
               ),
             ),
@@ -212,38 +212,39 @@ class _EventCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 4,
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            height: 6,
-            width: double.infinity,
+            width: 6,
             decoration: BoxDecoration(
               color: lineColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(event.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    ),
-                    IconButton(
-                      icon: Icon(event.isImportant ? Icons.favorite : Icons.favorite_border, color: event.isImportant ? Colors.red[700] : Colors.grey),
-                      onPressed: onToggleImportant,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Text('Date: ${DateFormat("MM/dd/yyyy").format(event.date)}', style: const TextStyle(color: Colors.grey)),
-                Text('Time: ${DateFormat("HH:mm").format(event.fullDateTime.toLocal())}', style: const TextStyle(color: Colors.grey)),
-              ],
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(event.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      ),
+                      IconButton(
+                        icon: Icon(event.isImportant ? Icons.favorite : Icons.favorite_border, color: event.isImportant ? Colors.red[700] : Colors.grey),
+                        onPressed: onToggleImportant,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Text('Date: ${DateFormat("MM/dd/yyyy").format(event.date)}', style: const TextStyle(color: Colors.grey)),
+                  Text('Time: ${DateFormat("HH:mm").format(event.fullDateTime.toLocal())}', style: const TextStyle(color: Colors.grey)),
+                ],
+              ),
             ),
           ),
         ],

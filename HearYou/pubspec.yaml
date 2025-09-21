@@ -75,6 +75,10 @@ flutter:
     - images/help.png
     - images/deleteacc.png
     - images/mysn.jpg
+    - images/babycrying.png
+    - images/doorknock.png
+    - images/babymv.png
+    - images/phonecall.png
 flutter_icons:
   android: true
   ios: true

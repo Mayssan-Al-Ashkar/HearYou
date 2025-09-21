@@ -22,6 +22,12 @@
 - ER Diagram
 <img src="./readme/ER.png"/>
 <br><br>
+
+- circuit design
+<img src="./readme/tinker.png"/>
+<br><br>
+
+
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
 
@@ -36,6 +42,8 @@
 - **Personalized AI Optimization Plans:** Clients receive intelligent, data-driven strategies to optimize energy usage, reduce costs, and promote sustainability based on their consumption behaviors.  
 
 <img src="./readme/features.png"/>
+
+- **Future Works:**For the future, I am planning to include a fire detection system in the baby’s room. The goal of this feature is to quickly detect any signs of fire, so the system can help prevent dangerous situations and reduce the risk of harm for both the baby and the family.
 
 <br><br>
 
@@ -60,9 +68,16 @@
 | ![fsdaf](./readme/hardware.gif)            | ![fsdaf](./readme/hardware1.jpg)      | ![fsdaf](./readme/hardware3.jpg)      |
 
 
-| SOS Emergency call                         | weekly reports recommendation         | dark mode                             |
+
+| alerts page                                | n8n workflow                          | weekly reports page                   |
 | ---------------------------------------    | ------------------------------------- | ------------------------------------- |
-| ![Landing](./readme/sos.gif)               | ![fsdaf](./readme/weeklyreports.gif)  | ![fsdaf](./readme/darkmode.gif)  |
+| ![fsdaf](./readme/alerts.png)              | ![fsdaf](./readme/n8n.png)            | ![fsdaf](./readme/recomm.png)         |
+
+
+
+| SOS Emergency call                         |  dark mode 1                          | dark mode 2                          |
+| ---------------------------------------    | ------------------------------------- | -------------------------------------|
+| ![Landing](./readme/sos.gif)               | ![fsdaf](./readme/darkmode.jpg)       | ![fsdaf](./readme/darkmode2.png)     |
 
 
 
@@ -76,7 +91,7 @@
 
 | Services                                | test case                             | 
 | --------------------------------------- | ------------------------------------- | 
-| ![Landing](./readme/services.png)       | ![fsdaf](./readme/swagger1.png) | 
+| ![Landing](./readme/services.png)       | ![fsdaf](./readme/swagger1.png)       | 
 
 
 test case                             | test case                             | 
@@ -86,12 +101,12 @@ test case                             | test case                             |
 
 validation                                | Validation                            | 
 -------------------------------------     | ------------------------------------- | 
-![fsdaf](./readme/validation1.png)            |  ![fsdaf](./readme/validation2.png)       | 
+![fsdaf](./readme/validation1.png)        |  ![fsdaf](./readme/validation2.png)   | 
 
 
-ci                                        | ci                                    | 
+ci1                                       | ci2                                   | 
 -------------------------------------     | ------------------------------------- | 
-![fsdaf](./readme/ci.png)                 |  ![fsdaf](./readme/validation2)       |
+![fsdaf](./readme/ci.png)                 |  ![fsdaf](./readme/ci2.png)           |
 
 
 

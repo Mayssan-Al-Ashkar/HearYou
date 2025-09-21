@@ -32,6 +32,39 @@ class AlertsScreenView extends StatelessWidget {
     required this.onSave,
   });
 
+  String? _imageForAction(String action) {
+    switch (action) {
+      case 'baby_crying':
+        return 'images/babycrying.png';
+      case 'door_knocking':
+        return 'images/doorknock.png';
+      case 'baby_movement':
+        return 'images/babymv.png';
+      case 'phone_call':
+        return 'images/phonecall.png';
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildAlertImage(String action) {
+    final String? path = _imageForAction(action);
+    if (path == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Image.asset(
+            path,
+            height: 56,
+            fit: BoxFit.contain,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final actions = model.selectedColorNamesTemp.keys.toList();
@@ -108,6 +141,7 @@ class AlertsScreenView extends StatelessWidget {
                                         color: isDarkMode ? Colors.white : Colors.black,
                                       ),
                                     ),
+                                    subtitle: _buildAlertImage(action),
                                     trailing: DropdownButton<String>(
                                       value: selectedName,
                                       icon: Icon(Icons.color_lens, color: isDarkMode ? Colors.white : Colors.black),

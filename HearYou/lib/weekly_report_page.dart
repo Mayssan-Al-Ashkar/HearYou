@@ -14,6 +14,7 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
   List<Map<String, dynamic>> _reports = [];
   bool _loading = true;
   String? _error;
+  final Set<String> _dismissedReportIds = <String>{};
 
   static const String apiBase = String.fromEnvironment(
     'API_BASE',
@@ -85,39 +86,60 @@ class _WeeklyReportPageState extends State<WeeklyReportPage> {
                           final summary = (data['summary'] ?? '').toString();
                           final recs = (data['recommendations'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
                           final createdAt = (data['generatedAt'] ?? data['createdAt'] ?? '').toString();
+                          final reportId = (data['id'] ?? data['_id'] ?? index.toString()).toString();
+                          if (_dismissedReportIds.contains(reportId)) {
+                            return const SizedBox.shrink();
+                          }
                           return Card(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             elevation: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Weekly Report', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                                  const SizedBox(height: 8),
-                                  if (summary.isNotEmpty) Text(summary, style: const TextStyle(fontSize: 14)),
-                                  if (recs.isNotEmpty) ...[
-                                    const SizedBox(height: 12),
-                                    const Text('Recommendations', style: TextStyle(fontWeight: FontWeight.bold)),
-                                    const SizedBox(height: 6),
-                                    ...recs.map((r) => Padding(
-                                      padding: const EdgeInsets.only(bottom: 8.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(r['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
-                                          if ((r['detail'] ?? '').toString().isNotEmpty)
-                                            Text(r['detail'] ?? '', style: const TextStyle(color: Colors.black54)),
-                                        ],
-                                      ),
-                                    )),
-                                  ],
-                                  if (createdAt.isNotEmpty) ...[
-                                    const SizedBox(height: 8),
-                                    Text(createdAt, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                                  ],
-                                ],
-                              ),
+                            child: Stack(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('Weekly Report', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                      const SizedBox(height: 8),
+                                      if (summary.isNotEmpty) Text(summary, style: const TextStyle(fontSize: 14)),
+                                      if (recs.isNotEmpty) ...[
+                                        const SizedBox(height: 12),
+                                        const Text('Recommendations', style: TextStyle(fontWeight: FontWeight.bold)),
+                                        const SizedBox(height: 6),
+                                        ...recs.map((r) => Padding(
+                                          padding: const EdgeInsets.only(bottom: 8.0),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(r['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
+                                              if ((r['detail'] ?? '').toString().isNotEmpty)
+                                                Text(r['detail'] ?? '', style: const TextStyle(color: Colors.black54)),
+                                            ],
+                                          ),
+                                        )),
+                                      ],
+                                      if (createdAt.isNotEmpty) ...[
+                                        const SizedBox(height: 8),
+                                        Text(createdAt, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.check_circle_outline, color: Colors.green),
+                                    tooltip: 'Mark report as read',
+                                    onPressed: () {
+                                      setState(() {
+                                        _dismissedReportIds.add(reportId);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                           );
                         },

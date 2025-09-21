@@ -98,7 +98,7 @@ class HomeAssistantPanel extends StatelessWidget {
                       shape: BoxShape.circle,
                       gradient: LinearGradient(colors: isDarkMode ? AppGradients.badgeDark : AppGradients.badgeLight),
                     ),
-                    child: const Icon(Icons.auto_awesome, color: Colors.white),
+                    child: const Icon(Icons.smart_toy, color: Colors.white),
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -431,7 +431,7 @@ class HomeScreenView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                         onTap: onOpenAssistantPanel,
                         child: const Center(
-                          child: Icon(Icons.auto_awesome, color: Colors.white),
+                          child: Icon(Icons.smart_toy, color: Colors.white),
                         ),
                       )
                     : Ink(
@@ -447,7 +447,7 @@ class HomeScreenView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           onTap: onOpenAssistantPanel,
                           child: const Center(
-                            child: Icon(Icons.auto_awesome, color: Colors.white),
+                            child: Icon(Icons.smart_toy, color: Colors.white),
                           ),
                         ),
                       ),
