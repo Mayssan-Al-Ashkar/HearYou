@@ -111,6 +111,7 @@
 <br><br>
 
 - **Validation:** Validation ensures that user inputs, such as email, password, and form fields, meet specific rules and constraints before proceeding. For example, in the code, checks are performed to confirm that fields are not empty, passwords match, and the email format is valid.
+
 | validation                                | Validation                            | 
 | -------------------------------------     | ------------------------------------- | 
 | ![fsdaf](./readme/validation1.png)        |  ![fsdaf](./readme/validation2.png)   | 
@@ -118,6 +119,7 @@
 <br><br>
 
 - **Continuous Integration (CI):** CI is a development practice that automates building and testing for every code change. It is highly effective for both Flutter and backend projects, ensuring code quality and faster development cycles.
+
 | ci1                                       | ci2                                   | 
 | -------------------------------------     | ------------------------------------- | 
 | ![fsdaf](./readme/ci.png)                 |  ![fsdaf](./readme/ci2.png)           |
