@@ -58,7 +58,7 @@
 
 <img src="./readme/features.png" width="600" height="400"/>
 
-- **Future Works:**For the future, I am planning to include a fire detection system in the baby’s room. The goal of this feature is to quickly detect any signs of fire, so the system can help prevent dangerous situations and reduce the risk of harm for both the baby and the family.
+- **Future Works:** For the future, I am planning to include a fire detection system in the baby’s room. The goal of this feature is to quickly detect any signs of fire, so the system can help prevent dangerous situations and reduce the risk of harm for both the baby and the family.
 
 <br><br>
 
@@ -72,9 +72,9 @@
 | ![Landing](./readme/login.gif)          | ![fsdaf](./readme/google.gif)         | ![fsdaf](./readme/aiagent.gif)        |
 
 
-| ml baby movement                        | baby crying notification                   | baby movement notification                  |
+| ml baby movement                        | phone calling notification                   | baby movement notification                  |
 | --------------------------------------- | ------------------------------------       | -------------------------------------       |
-| ![Landing](./readme/notificationml.gif) | ![Landing](./readme/babycrying.jpg)        | ![Landing](./readme/notificationphoto.jpg)  |
+| ![Landing](./readme/notificationml.gif) | ![Landing](./readme/phonecall.jpg)        | ![Landing](./readme/notificationphoto.jpg)  |
 
 - Arduino was used for the IoT part, with a push button serving as a prototype for the doorbell. An RGB LED combined with a vibration motor was implemented to notify the mother about the type of event that occurred.
 
@@ -92,7 +92,7 @@
 
 | weekly reports page                        |  dark mode 1                          |  darkmode 2                             |
 | ---------------------------------------    | ------------------------------------- | -------------------------------------   |
-| ![fsdaf](./readme/recomm.png)             | ![fsdaf](./readme/darkmode2.jpg)      |   ![Landing](./readme/darkmode2.png)    |
+| ![fsdaf](./readme/recomm.png)             | ![fsdaf](./readme/darkmode2.png)      |   ![Landing](./readme/darkmode.jpg)    |
 
 
 
@@ -101,10 +101,9 @@
 <!-- Development & Testing -->
 <img src="./readme/title6.svg"/>
 
-### Add Title Here
 
 
-| Services                                | test case                             | 
+| Services                                | Linear                             | 
 | --------------------------------------- | ------------------------------------- | 
 | ![Landing](./readme/services.png)       | ![fsdaf](./readme/linear.png)         | 
 
@@ -112,16 +111,16 @@
 <br><br>
 
 - **Validation:** Validation ensures that user inputs, such as email, password, and form fields, meet specific rules and constraints before proceeding. For example, in the code, checks are performed to confirm that fields are not empty, passwords match, and the email format is valid.
-validation                                | Validation                            | 
--------------------------------------     | ------------------------------------- | 
-![fsdaf](./readme/validation1.png)        |  ![fsdaf](./readme/validation2.png)   | 
+| validation                                | Validation                            | 
+| -------------------------------------     | ------------------------------------- | 
+| ![fsdaf](./readme/validation1.png)        |  ![fsdaf](./readme/validation2.png)   | 
 
 <br><br>
 
 - **Continuous Integration (CI):** CI is a development practice that automates building and testing for every code change. It is highly effective for both Flutter and backend projects, ensuring code quality and faster development cycles.
-ci1                                       | ci2                                   | 
--------------------------------------     | ------------------------------------- | 
-![fsdaf](./readme/ci.png)                 |  ![fsdaf](./readme/ci2.png)           |
+| ci1                                       | ci2                                   | 
+| -------------------------------------     | ------------------------------------- | 
+| ![fsdaf](./readme/ci.png)                 |  ![fsdaf](./readme/ci2.png)           |
 
 <br><br>
 
