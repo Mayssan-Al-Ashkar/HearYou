@@ -31,6 +31,7 @@
 
 - ER Diagram  
 <img src="./readme/ER.png" width="600" height="400"/>  
+<a href="https://app.eraser.io/workspace/MvIk4i8OynC0sq9c8MB3" target="_blank">Open in Eraser</a>
 <br><br>
 
 - Circuit Design  
@@ -107,22 +108,10 @@
 | --------------------------------------- | ------------------------------------- | 
 | ![Landing](./readme/services.png)       | ![fsdaf](./readme/linear.png)         | 
 
-<br><br>
-
-- **Swagger:** Swagger is an API documentation and testing tool that provides a clear interface to explore, validate, and interact with backend endpoints.
-
-<br><br>
-
-test case                             | test case                             | 
-------------------------------------- | ------------------------------------- | 
-![fsdaf](./readme/swagger2.png)       | ![fsdaf](./readme/swagger1.png)       | 
 
 <br><br>
 
 - **Validation:** Validation ensures that user inputs, such as email, password, and form fields, meet specific rules and constraints before proceeding. For example, in the code, checks are performed to confirm that fields are not empty, passwords match, and the email format is valid.
-
-<br><br>
-
 validation                                | Validation                            | 
 -------------------------------------     | ------------------------------------- | 
 ![fsdaf](./readme/validation1.png)        |  ![fsdaf](./readme/validation2.png)   | 
@@ -130,14 +119,28 @@ validation                                | Validation                          
 <br><br>
 
 - **Continuous Integration (CI):** CI is a development practice that automates building and testing for every code change. It is highly effective for both Flutter and backend projects, ensuring code quality and faster development cycles.
-
-<br><br>
-
 ci1                                       | ci2                                   | 
 -------------------------------------     | ------------------------------------- | 
 ![fsdaf](./readme/ci.png)                 |  ![fsdaf](./readme/ci2.png)           |
 
+<br><br>
 
+- **Machine Learning Models:** Machine learning is used to detect baby crying and movements. The models applied are:
+  - **Baby crying detection:** Google **YAMNet** (from TensorFlow Hub `yamnet/1`), which classifies audio signals and identifies crying sounds.  
+  - **Baby movement detection:** **MediaPipe Holistic (Pose)** to extract body keypoints, with movement logic handled using rule-based analysis rather than a separate ML classifier.
+
+Baby crying detection ml                                       | baby movement detection ml                 | 
+-------------------------------------     | ------------------------------------- | 
+![fsdaf](./readme/babycryml.png)                 |  ![fsdaf](./readme/babymvml.png)           |
+
+<br><br>
+
+- **AI Agent:** The AI agent acts as a smart controller for system settings. Instead of navigating menus, users can type simple requests like *“turn on vibration”* or *“set quiet hours to 10 PM”*. The AI interprets these commands and applies the changes directly in the backend, making the system more intuitive and user-friendly.
+
+
+| baby movement detection ml                 | 
+| ------------------------------------- | 
+|  ![fsdaf](./readme/aiflow.png)           |
 
 <br><br>
 
@@ -179,3 +182,11 @@ ci1                                       | ci2                                 
 | --------------------------------------- | 
 | ![Landing](./readme/deploy.png)         | 
 <br><br>
+
+<br><br>
+
+- **Swagger:** Swagger is an API documentation and testing tool that provides a clear interface to explore, validate, and interact with backend endpoints.
+
+Swagger 1                             | swagger 2                             | swagger 3                             | 
+------------------------------------- | ------------------------------------- | ------------------------------------- | 
+![fsdaf](./readme/swagger2.png)       | ![fsdaf](./readme/swagger1.png)       |  ![fsdaf](./readme/swagger3.png)      | 

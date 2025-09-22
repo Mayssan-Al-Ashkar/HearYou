@@ -331,6 +331,7 @@ with mp_holistic.Holistic(
             if moved:
                 if movement_start_time is None:
                     movement_start_time = current_time
+                    print("baby movement detected")
                 last_movement_time = current_time
                 box_color = (0, 0, 255)  # red
             else:
