@@ -188,6 +188,6 @@ Baby crying detection ml                                       | baby movement d
 
 - **Swagger:** Swagger is an API documentation and testing tool that provides a clear interface to explore, validate, and interact with backend endpoints.
 
-Swagger 1                             | swagger 2                             | swagger 3                             | 
+swagger apis                             | settings testing                         | connection testing                             | 
 ------------------------------------- | ------------------------------------- | ------------------------------------- | 
 ![fsdaf](./readme/swagger2.png)       | ![fsdaf](./readme/swagger1.png)       |  ![fsdaf](./readme/swagger3.png)      | 
