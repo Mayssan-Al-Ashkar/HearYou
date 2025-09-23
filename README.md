@@ -139,7 +139,7 @@ Baby crying detection ml                                       | baby movement d
 - **AI Agent:** The AI agent acts as a smart controller for system settings. Instead of navigating menus, users can type simple requests like *“turn on vibration”* or *“set quiet hours to 10 PM”*. The AI interprets these commands and applies the changes directly in the backend, making the system more intuitive and user-friendly.
 
 
-| baby movement detection ml                 | 
+| ai agent flow                 | 
 | ------------------------------------- | 
 |  ![fsdaf](./readme/aiflow.png)           |
 
