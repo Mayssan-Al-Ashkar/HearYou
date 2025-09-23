@@ -56,7 +56,7 @@
 
 - **Personalized AI Optimization Plans:** Clients receive intelligent, data-driven strategies to optimize energy usage, reduce costs, and promote sustainability based on their consumption behaviors.  
 
-<img src="./readme/features.png" width="600" height="400"/>
+<img src="./readme/features.png" width="600"/>
 
 - **Future Works:** For the future, I am planning to include a fire detection system in the baby’s room. The goal of this feature is to quickly detect any signs of fire, so the system can help prevent dangerous situations and reduce the risk of harm for both the baby and the family.
 
@@ -67,30 +67,30 @@
 
 ### User Screens (Mobile)
 
-| Login screen                            | settings screen                       | ai agent screen                       |
+| Login Screen                            | Settings Screen                       | Ai Agent Screen                       |
 | --------------------------------------- | ------------------------------------- | ------------------------------------- |
 | ![Landing](./readme/login.gif)          | ![fsdaf](./readme/google.gif)         | ![fsdaf](./readme/aiagent.gif)        |
 
 
-| ml baby movement                        | phone calling notification                   | baby movement notification                  |
+| ML Baby Movement                        | Phone Calling Notification                   | Baby Movement Notification                  |
 | --------------------------------------- | ------------------------------------       | -------------------------------------       |
 | ![Landing](./readme/notificationml.gif) | ![Landing](./readme/phonecall.jpg)        | ![Landing](./readme/notificationphoto.jpg)  |
 
 - Arduino was used for the IoT part, with a push button serving as a prototype for the doorbell. An RGB LED combined with a vibration motor was implemented to notify the mother about the type of event that occurred.
 
-| bracelet prototype                         | bracelet prototype                    | bracelet prototype                    |
+| Bracelet Prototype                         | Bracelet Prototype                    | Bracelet Prototype                    |
 | ---------------------------------------    | ------------------------------------- | ------------------------------------- |
 | ![fsdaf](./readme/hardware.gif)            | ![fsdaf](./readme/hardware1.jpg)      | ![fsdaf](./readme/hardware3.jpg)      |
 
 
 
-| alerts page                                | live video streaming                  | SOS Emergency call                     |  
+| Alerts Page                                | Live Video Streaming                  | SOS Emergency Call                     |  
 | ---------------------------------------    | ------------------------------------- | -------------------------------------- |
 | ![fsdaf](./readme/alerts.png)              | ![fsdaf](./readme/camera.gif)         | ![Landing](./readme/sos.gif)           |
 
 
 
-| weekly reports page                        |  dark mode 1                          |  darkmode 2                             |
+| Weekly Reports Page                        |  Dark Mode 1                          |  Dark Mode 2                             |
 | ---------------------------------------    | ------------------------------------- | -------------------------------------   |
 | ![fsdaf](./readme/recomm.png)             | ![fsdaf](./readme/darkmode2.png)      |   ![Landing](./readme/darkmode.jpg)    |
 
@@ -112,17 +112,10 @@
 
 - **Validation:** Validation ensures that user inputs, such as email, password, and form fields, meet specific rules and constraints before proceeding. For example, in the code, checks are performed to confirm that fields are not empty, passwords match, and the email format is valid.
 
-| validation                                | Validation                            | 
+| Validation                                | Validation                            | 
 | -------------------------------------     | ------------------------------------- | 
 | ![fsdaf](./readme/validation1.png)        |  ![fsdaf](./readme/validation2.png)   | 
 
-<br><br>
-
-- **Continuous Integration (CI):** CI is a development practice that automates building and testing for every code change. It is highly effective for both Flutter and backend projects, ensuring code quality and faster development cycles.
-
-| ci1                                       | ci2                                   | 
-| -------------------------------------     | ------------------------------------- | 
-| ![fsdaf](./readme/ci.png)                 |  ![fsdaf](./readme/ci2.png)           |
 
 <br><br>
 
@@ -130,7 +123,7 @@
   - **Baby crying detection:** Google **YAMNet** (from TensorFlow Hub `yamnet/1`), which classifies audio signals and identifies crying sounds.  
   - **Baby movement detection:** **MediaPipe Holistic (Pose)** to extract body keypoints, with movement logic handled using rule-based analysis rather than a separate ML classifier.
 
-Baby crying detection ml                                       | baby movement detection ml                 | 
+Baby Crying Detection ML                                       | Baby Movement Detection ML                 | 
 -------------------------------------     | ------------------------------------- | 
 ![fsdaf](./readme/babycryml.png)                 |  ![fsdaf](./readme/babymvml.png)           |
 
@@ -139,7 +132,7 @@ Baby crying detection ml                                       | baby movement d
 - **AI Agent:** The AI agent acts as a smart controller for system settings. Instead of navigating menus, users can type simple requests like *“turn on vibration”* or *“set quiet hours to 10 PM”*. The AI interprets these commands and applies the changes directly in the backend, making the system more intuitive and user-friendly.
 
 
-| ai agent flow                 | 
+| AI Agent Flow                 | 
 | ------------------------------------- | 
 |  ![fsdaf](./readme/aiflow.png)           |
 
@@ -188,6 +181,6 @@ Baby crying detection ml                                       | baby movement d
 
 - **Swagger:** Swagger is an API documentation and testing tool that provides a clear interface to explore, validate, and interact with backend endpoints.
 
-swagger apis                             | settings testing                         | connection testing                             | 
+Swagger APIs                             | Settings Testing                         | Connection Testing                             | 
 ------------------------------------- | ------------------------------------- | ------------------------------------- | 
 ![fsdaf](./readme/swagger2.png)       | ![fsdaf](./readme/swagger1.png)       |  ![fsdaf](./readme/swagger3.png)      | 
