@@ -4,18 +4,23 @@
 <!-- Project Overview -->
 <img src="./readme/title2.svg"/>
 
-- **HearYou** is a smart safety system designed to support deaf and hard-of-hearing mothers. It helps them stay aware of important events at home, such as when the baby cries, someone knocks on the door, a phone call comes in, or other significant activities occur.
+- **HearYou** is a smart safety system designed to support deaf and hard-of-hearing mothers. It helps them stay aware of important events at home, such as when the baby cries, someone knocks on the door, a phone call comes in, or other significant activities occur.  
+  #Accessibility #Inclusion  
 
-- The system consists of two main components: a mobile application and a physical bracelet.
+- The system consists of two main components: a mobile application and a physical bracelet.  
+  #IoT #MobileApp #WearableTech  
 
   - **Digital Part (Mobile Application):**
-    - Includes an SOS emergency call feature and live video streaming, allowing the mother to monitor her baby while sleeping.
-    - Provides weekly reports with recommendations based on the last 10 events of the week.
-    - Features an AI assistant to simplify control of settings, such as customizing event colors, setting quiet hours, prioritizing events, and enabling or disabling vibration.
+    - Includes an SOS emergency call feature and live video streaming, allowing the mother to monitor her baby while sleeping.  
+    - Provides weekly reports with recommendations based on the last 10 events of the week.  
+    - Features an AI assistant to simplify control of settings, such as customizing event colors, setting quiet hours, prioritizing events, and enabling or disabling vibration.  
+    #AI #MachineLearning #MobileDevelopment #HealthTech  
 
   - **Physical Part (Bracelet):**
-    - Contains a vibration motor to notify the mother when an event occurs.
-    - Uses an RGB light to indicate the type of event.
+    - Contains a vibration motor to notify the mother when an event occurs.  
+    - Uses an RGB light to indicate the type of event.  
+    #Wearables #Hardware #MothersSafety
+
 
 <br><br>
 
